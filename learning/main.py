@@ -17,8 +17,7 @@ clf = RidgeCV(alphas = [0.1, 1.0, 10.0])
 clf.fit(X, y)
 
 prediction = clf.predict(X_test);
-print 'X_test is:' 
-print X_test
+print 'X_test is: %f' % X_test
 print 'Expected is: %f' % y_test
 print 'Prediction is: %f' % prediction
 
