@@ -2,6 +2,7 @@
 
 #from sklearn import datasets
 from sklearn.linear_model import RidgeCV
+from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,24 +14,16 @@ print y
 
 m = X.shape[0] #number of samples
 
-X_test = X[0,:]
-y_test = y[0]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 clf = RidgeCV(alphas = [0.1, 1.0, 10.0], normalize=True)
-clf.fit(X, y)
+clf.fit(X_train, y_train)
 
 prediction = clf.predict(X_test);
 print 'X_test is: %f'
 print X_test
-print 'Expected is: %f' % y_test
-print 'Prediction is: %f' % prediction
-
-accuracy = 0
-for i in range(m):
-    if y[i] == clf.predict(X[i,:]):
-       accuracy+=1
-
-print "Accuracy: %f" % accuracy
+print 'Expected is: %f' % y_test[0]
+print 'Prediction is: %f' % prediction[0]
 print "Score: %f" % clf.score(X, y)
 
 plt.figure(1)
