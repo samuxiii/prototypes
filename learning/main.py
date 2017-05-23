@@ -25,6 +25,7 @@ print X_test
 print 'Expected is: %f' % y_test[0]
 print 'Prediction is: %f' % prediction[0]
 print "Score: %f" % clf.score(X, y)
+print "Alpha: %f" % clf.alpha_
 
 plt.figure(1)
 plt.plot(X[:,0], y, 'bo')
