@@ -28,8 +28,11 @@ print "Score: %f" % clf.score(X, y)
 print "Alpha: %f" % clf.alpha_
 
 plt.figure(1)
-plt.plot(X[:,0], y, 'bo')
-plt.plot(X[:,0], clf.predict(X), 'gx')
-plt.ylabel('Ys')
-plt.xlabel('Xs')
+real, = plt.plot(np.arange(m), y, 'b-', label='real')
+predicted, = plt.plot(np.arange(m), clf.predict(X), 'r-', label='predicted')
+plt.ylabel('Stock')
+plt.xlabel('Time')
+
+plt.legend([real, predicted], ['Real', 'Predicted'])
+
 plt.show()
