@@ -2,9 +2,15 @@ import dtree as dt
 import telebot
 from telebot import types
 import time
+from optparse import OptionParser
 
-TOKEN = ''
+#get token from command line
+parser = OptionParser()
+parser.add_option("-t", "--token")
+(options, args) = parser.parse_args()
+TOKEN = options.token
 
+#init telebot
 bot = telebot.TeleBot(TOKEN)
 smart = 0;
 
