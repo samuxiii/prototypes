@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
 
 X = np.array([[1, 2], [4, 4], [2, 1], [1, 3], [3, 2], [1, 4], [2, 3]])
 
