@@ -40,13 +40,20 @@ print 'Prediction is: %f' % prediction[0]
 print "Score: %f" % clf.score(X, y)
 print "Alpha: %f" % clf.alpha_
 
-#plotting
+#plotting all data
 plt.figure(1)
 real, = plt.plot(np.arange(m), y, 'b-', label='real')
 predicted, = plt.plot(np.arange(m), clf.predict(X), 'r-', label='predicted')
 plt.ylabel('Stock')
 plt.xlabel('Time')
-
 plt.legend([real, predicted], ['Real', 'Predicted'])
+plt.show()
 
+#pltting only test
+mtest = X_test.shape[0]
+real, = plt.plot(np.arange(mtest), y_test, 'b-', label='real')
+test, = plt.plot(np.arange(mtest), clf.predict(X_test), 'go', label='test')
+plt.ylabel('Stock')
+plt.xlabel('Time')
+plt.legend([real, test], ['Real', 'Test'])
 plt.show()
