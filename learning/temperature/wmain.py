@@ -4,7 +4,6 @@ from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
-#from matplotlib.dates import date2num
 import matplotlib.dates as mdates
 from datetime import datetime
 
@@ -13,7 +12,7 @@ def datestr2num(s):
 
 data = np.loadtxt(fname = 'weather.txt', delimiter = ',', converters = {0: mdates.strpdate2num('%Y-%m-%d')})
 print data
-X0, X, y = data[:,0], data[:,0:4], data[:,4]
+X0, X, y = data[:,0], data[:,1:4], data[:,4]
 
 print X
 print y
