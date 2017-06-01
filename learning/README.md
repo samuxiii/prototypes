@@ -1,4 +1,4 @@
-Directory intended to store and test the different machine learning approaches.
+Directory intended to store and test the different machine learning approaches. All of them are study cases.
 
 ### Classifiers
 - __Temperature__: RidgeCV
