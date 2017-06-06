@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.6
+
 '''
 Simple network with two input nodes and 
 one output node with a sigmoid activation function.

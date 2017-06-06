@@ -7,3 +7,5 @@ Directory intended to store and test the different machine learning approaches. 
 - __dtree.py__: DecisionTreeClassifier, KNeigborsClassifier, SVC
 - __multilayerNN.py__: MLP (multi layer perceptron)
 - __neighbors.py__: NearestNeighbors
+
+_Note: not all files use the same python version. Take a look at the description._

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.6 
+
 # Use the numpy library
 import numpy as np
 
