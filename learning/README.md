@@ -9,3 +9,6 @@ Directory intended to store and test the different machine learning approaches. 
 - __neighbors.py__: NearestNeighbors
 
 _Note: not all files use the same python version. Take a look at the description._
+
+### Todo
+- Create new neural networks from scratch
