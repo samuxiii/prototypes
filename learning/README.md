@@ -12,3 +12,4 @@ _Note: not all files use the same python version. Take a look at the description
 
 ### Todo
 - Create new neural networks from scratch
+- Sentiment analysis neural network
