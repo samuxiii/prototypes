@@ -1,6 +1,6 @@
 import os
 import subprocess
-from flask import Flask, request, redirect, url_for, send_from_directory
+from flask import Flask, request, redirect, url_for, send_from_directory, after_this_request
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = '/tmp/uploads/'
@@ -9,6 +9,8 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ROOT'] = os.path.dirname(os.path.abspath(__file__))
+
+painter_style = {'afremov':'rain-princess.ckpt', 'picasso':'la-muse.ckpt', 'picabia':'udnie.ckpt', 'munch':'scream.ckpt', 'hokusai':'wave.ckpt', 'turner':'wreck.ckpt'}
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -22,6 +24,13 @@ def transform(checkpoint, inputfile, outputfile):
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    global painter_stype
+
+    #clean the tmp
+    fileList = [ f for f in os.listdir(app.config['UPLOAD_FOLDER']) if f.endswith(('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG'))]
+    for f in fileList:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], f))
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -39,17 +48,13 @@ def upload_file():
             painter = request.form.get('painter')
 
             #transform
-            checkpoint = app.config['ROOT'] + '/checkpoint/rain-princess.ckpt'
+            checkpoint = app.config['ROOT'] + '/checkpoint/' + painter_style[painter]
             input_filename = app.config['UPLOAD_FOLDER'] + '/' + filename
             file_, ext_ = filename.split('.')
-            outfile = file_ + '_afremov' + '.' + ext_
+            outfile = file_ + '_' + painter + '.' + ext_
             output_filename = app.config['UPLOAD_FOLDER'] + '/' + outfile
 
             transform(checkpoint, input_filename, output_filename)
-            #clean tmp
-
-            #return redirect(url_for('upload_file',
-            #                        filename=filename, painter=painter))
             return redirect(url_for('download',
                                     filename=outfile))
     return '''
@@ -74,12 +79,6 @@ def upload_file():
 def download(filename):
     uploads = os.path.join(app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)
-
-@app.route('/clean', methods=['GET', 'POST'])
-def clean():
-    process = subprocess.Popen(['rm', app.config['UPLOAD_FOLDER'] + '/*'], stdout=subprocess.PIPE)
-    out = process.communicate()
-    return out
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
