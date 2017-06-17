@@ -15,3 +15,4 @@ _Note: not all files use the same python version. Take a look at the description
 - Create new neural networks from scratch
 - ~~Sentiment analysis neural network~~
 - Try something with chat bots
+- Add IA in planes game
