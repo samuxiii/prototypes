@@ -17,3 +17,4 @@ _Note: not all files use the same python version. Take a look at the description
 - Try something with chat bots
 - Add IA in planes game
 - Chatbot in telegram bots
+- CNN example
