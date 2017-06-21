@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 '''
 Simple example of multilayer neural network 
@@ -38,7 +38,7 @@ predictions = mlp.predict(X_test)
 ## evaluate
 from sklearn.metrics import classification_report, confusion_matrix
 
-print "Confusion matrix results:"
-print (confusion_matrix(y_test, predictions))
-print "Classification report:"
-print (classification_report(y_test, predictions))
+print("Confusion matrix results:")
+print(confusion_matrix(y_test, predictions))
+print("Classification report:")
+print(classification_report(y_test, predictions))
