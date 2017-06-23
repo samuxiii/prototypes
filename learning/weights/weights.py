@@ -1,4 +1,3 @@
-from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import numpy as np
 import math
@@ -16,26 +15,23 @@ def batches(batch_size, features, labels):
     return outout_batches
 
 
-def run(weights, bias):
+def run(weights, bias, data_dict):
     n_input = 784  # MNIST data input (img shape: 28*28)
     n_classes = 10  # MNIST total classes (0-9 digits)
 
-    # Import MNIST data
-    mnist = input_data.read_data_sets('/tmp/datasets/tensorflow/mnist', one_hot=True)
+    train_features = data_dict['trf']
+    valid_features = data_dict['vaf']
+    test_features = data_dict['tef']
 
-    train_features = mnist.train.images
-    valid_features = mnist.validation.images
-    test_features = mnist.test.images
-
-    train_labels = mnist.train.labels.astype(np.float32)
-    valid_labels = mnist.validation.labels.astype(np.float32)
-    test_labels = mnist.test.labels.astype(np.float32)
+    train_labels = data_dict['trl']
+    valid_labels = data_dict['val']
+    test_labels = data_dict['tel']
 
     # Features and Labels
     features = tf.placeholder(tf.float32, [None, n_input])
     labels = tf.placeholder(tf.float32, [None, n_classes])
 
-    # Logits = xW + b
+    # Model => Logits = xW + b
     logits = tf.add(tf.matmul(features, weights), bias)
 
     # Define loss and optimizer
@@ -46,7 +42,7 @@ def run(weights, bias):
     init = tf.global_variables_initializer()
 
     batch_size = 128
-    epochs = 10
+    epochs = 50
     learn_rate = 0.001
 
     train_batches = batches(batch_size, train_features, train_labels)
@@ -56,11 +52,9 @@ def run(weights, bias):
 
     with tf.Session() as sess:
         sess.run(init)
-
-        # Training cycle
+        
+        # Training
         for epoch_i in range(epochs):
-
-            # Loop over all batches
             for batch_features, batch_labels in train_batches:
                 train_feed_dict = {
                     features: batch_features,
@@ -68,7 +62,7 @@ def run(weights, bias):
                     learning_rate: learn_rate}
                 sess.run(optimizer, feed_dict=train_feed_dict)
 
-            # Print cost and validation accuracy of an epoch
+            # Store the cost an epoch
             current_cost = sess.run(
                 cost,
                 feed_dict={features: batch_features, labels: batch_labels})

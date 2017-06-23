@@ -4,6 +4,7 @@ Directory intended to store and test the different machine learning approaches. 
 - __Numpy__: simple examples of numpy uses
 - __Temperature__: RidgeCV
 - __Stock__: RidgeCV
+- __Weights__: trying out differnt weight initializations in NN
 - __dtree.py__: DecisionTreeClassifier, KNeigborsClassifier, SVC
 - __multilayerNN.py__: MLP (multi layer perceptron)
 - __neighbors.py__: NearestNeighbors
