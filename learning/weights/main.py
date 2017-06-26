@@ -42,6 +42,13 @@ weights = tf.Variable(tf.truncated_normal([n_input, n_classes]))
 #bias = tf.Variable(tf.truncated_normal([n_classes]))
 costs_4 = w.run(weights, bias, data_dict)
 
+#uniform distribution 1/sqrt(n)
+y = 1/np.sqrt(n_input)
+weights = tf.Variable(tf.random_uniform([n_input, n_classes], -y, y))
+#bias = tf.Variable(tf.truncated_normal([n_classes]))
+costs_5 = w.run(weights, bias, data_dict)
+
+
 #plotting
 plt.figure()
 plt.ylabel('Cost')
@@ -49,7 +56,8 @@ plt.xlabel('Epochs')
 plt.plot(costs_1, 'r-', label='normal distribution')
 plt.plot(costs_2, 'y-', label='zeros')
 plt.plot(costs_3, 'g-', label='ones')
-plt.plot(costs_4, 'b-', label='truncated normal distribution')
+plt.plot(costs_4, 'b-', label='truncated normal distribution stddev=1.0')
+plt.plot(costs_5, 'tab:orange', label='uniform distribution 1/sqrt(n)')
 
 plt.legend()
 plt.show()
