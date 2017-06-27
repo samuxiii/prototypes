@@ -13,9 +13,6 @@ Directory intended to store and test the different machine learning approaches. 
 _Note: not all files use the same python version. Take a look at the description._
 
 ### Todo
-- Create new neural networks from scratch
-- ~~Sentiment analysis neural network~~
-- Try something with chat bots
 - Add IA in planes game
 - Chatbot in telegram bots
 - CNN example
