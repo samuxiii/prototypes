@@ -3,6 +3,7 @@ Directory intended to store and test the different machine learning approaches. 
 ### Classifiers
 - __Numpy__: simple examples of numpy uses
 - __Temperature__: RidgeCV
+- __Simpsons__: ConvNet to recognize a simpson character
 - __Stock__: RidgeCV
 - __Weights__: trying out differnt weight initializations in NN
 - __dtree.py__: DecisionTreeClassifier, KNeigborsClassifier, SVC
@@ -13,6 +14,6 @@ Directory intended to store and test the different machine learning approaches. 
 _Note: not all files use the same python version. Take a look at the description._
 
 ### Todo
-- Add IA in planes game
+- Add AI in planes game
 - Chatbot in telegram bots
 - CNN example
