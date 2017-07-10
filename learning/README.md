@@ -16,4 +16,3 @@ _Note: not all files use the same python version. Take a look at the description
 ### Todo
 - Add AI in planes game
 - Chatbot in telegram bots
-- CNN example
