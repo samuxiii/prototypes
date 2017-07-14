@@ -13,5 +13,5 @@ Directory intended to store and test the different machine learning approaches. 
 _Note: not all files use the same python version. Take a look at the description._
 
 ### Todo
-- Add AI in planes game
-- Chatbot in telegram bots
+- Add AI in planes game (feedforward nn)
+- Chatbot in telegram bots (seq2seq?)
