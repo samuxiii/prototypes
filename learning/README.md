@@ -15,3 +15,4 @@ _Note: not all files use the same python version. Take a look at the description
 ### Todo
 - Add AI in planes game (feedforward nn)
 - Chatbot in telegram bots (seq2seq?)
+- NLP NN
