@@ -17,3 +17,4 @@ _Note: not all files use the same python version. Take a look at the description
 - Chatbot in telegram bots (seq2seq?)
 - NLP NN
 - Autoencoder (image -> text)
+- Move notebooks to code
