@@ -18,4 +18,4 @@ _Note: not all files use the same python version. Take a look at the description
 - NLP NN
 - Autoencoder (image -> text)
 - Bach project (tensorflow)
-- Some examples with octave
+- Some examples with octave (not sure about that)
