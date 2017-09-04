@@ -26,7 +26,7 @@ plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0., fontsize='x-small')
 
 plt.subplot(232)
-plt.hist(a1, bins_, range_, label="Random Uniform 1/sqrt(n)", color='c')
+plt.hist(a1, bins_, range_, label="Random Uniform (+/-) 1/sqrt(n)", color='c')
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0., fontsize='x-small')
 
