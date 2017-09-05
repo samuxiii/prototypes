@@ -12,7 +12,7 @@ train = np.array(train).reshape(8, 3)
 #labels associated
 label = ['male','female','male','female','female','male','male','female']
 le = preprocessing.LabelEncoder().fit(label)
-print le.transform(label)
+print(le.transform(label))
 
 #Test sample
 test = np.array([160, 48, 39]).reshape(1, -1)
@@ -22,21 +22,21 @@ clf1 = tree.DecisionTreeClassifier()
 clf1 = clf1.fit(train, label)
 prediction1 = clf1.predict(test)
 
-print 'Decision Tree Classifier predicts:' + str(prediction1)
+print('Decision Tree Classifier predicts: {}'.format(str(prediction1)))
 
 #Kneighbors Classifier Test
 clf2 = neighbors.KNeighborsClassifier()
 clf2 = clf2.fit(train,label)
 prediction2 = clf2.predict(test)
 
-print 'K-nearest neighbor classifier predicts:' + str(prediction2)
+print('K-nearest neighbor classifier predicts: {}'.format(str(prediction2)))
 
 #Support Vector Classifier
 clf3 = svm.SVC()
 clf3 = clf3.fit(train, label)
 prediction3 = clf3.predict(test)
 
-print 'SVC Classifier predicts' + str(prediction3)
+print('SVC Classifier predicts: {}'.format(str(prediction3)))
 
 
 plt.figure(1)
