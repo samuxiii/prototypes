@@ -21,12 +21,11 @@ coory = input("Define coordinate y: ")
 
 new = np.array([coorx, coory]).reshape(1, -1)
 newDist, newInd = nbrs.kneighbors(new)
-print "Neighbors indices: "
-print newInd
+print("Your coordinates: {}".format(new))
+print("Neighbors indices: {}".format(newInd))
 
 plt.figure()
 plt.scatter(X[:, 0],X[:, 1])
 plt.plot(X[newInd, 0], X[newInd, 1], 'yo')
-print new
 plt.plot(new[:, 0], new[:, 1], 'ro')
 plt.show()
