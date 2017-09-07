@@ -10,8 +10,8 @@ import os
 data = np.loadtxt(fname = 'data.txt', delimiter = ',')
 X, y = data[:,:5], data[:,5]
 
-print X
-print y
+print(X)
+print(y)
 
 m = X.shape[0] #number of samples
 
@@ -26,19 +26,18 @@ filename = 'model.pkl'
 
 if (os.path.isfile(filename)):
    joblib.load(filename)
-   print "loaded existing model"
+   print("loaded existing model")
 else:
    joblib.dump(clf, filename)
-   print "created new persistent model"
+   print("created new persistent model")
 
 #predict
 prediction = clf.predict(X_test);
-print 'X_test is: %f'
-print X_test
-print 'Expected is: %f' % y_test[0]
-print 'Prediction is: %f' % prediction[0]
-print "Score: %f" % clf.score(X, y)
-print "Alpha: %f" % clf.alpha_
+print("X_test is: {}".format(X_test))
+print("Expected is: {}".format(y_test[0]))
+print("Prediction is: {}".format(prediction[0]))
+print("Score: {}".format(clf.score(X, y)))
+print("Alpha: {}".format(clf.alpha_))
 
 #plotting all data
 plt.figure(1)
