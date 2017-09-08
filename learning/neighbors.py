@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/python
 
 import numpy as np
 from sklearn.neighbors import NearestNeighbors

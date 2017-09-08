@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/python
 
 from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import train_test_split
