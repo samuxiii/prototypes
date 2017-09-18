@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/python
 
 from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import train_test_split
@@ -7,15 +7,19 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime
 
-def datestr2num(s):
-    return date2num(datetime.strptime(s, '%Y-%m-%d'))
+def bytespdate2num(fmt, encoding='utf-8'):
+    strconverter = mdates.strpdate2num(fmt)
+    def bytesconverter(b):
+        s = b.decode(encoding)
+        return strconverter(s)
+    return bytesconverter
 
-data = np.loadtxt(fname = 'weather.txt', delimiter = ',', converters = {0: mdates.strpdate2num('%Y-%m-%d')})
-print data
+data = np.loadtxt(fname = 'weather.txt', delimiter = ',', converters = {0: bytespdate2num('%Y-%m-%d')})
+print(data)
 X0, X, y = data[:,0], data[:,1:4], data[:,4]
 
-print X
-print y
+print(X)
+print(y)
 
 m = X.shape[0] #number of samples
 
@@ -26,12 +30,11 @@ clf.fit(X_train, y_train)
 
 prediction = clf.predict(X_test);
 
-print 'X_test is: %f'
-print X_test
-print 'Expected is: %f' % y_test[0]
-print 'Prediction is: %f' % prediction[0]
-print "Score: %f" % clf.score(X, y)
-print "Alpha: %f" % clf.alpha_
+print("X_test is: {}".format(X_test))
+print("Expected is: {}".format(y_test[0]))
+print("Prediction is: {}".format(prediction[0]))
+print("Score: {}".format(clf.score(X, y)))
+print("Alpha: {}".format(clf.alpha_))
 
 #plotting
 plt.figure(1)
@@ -57,4 +60,4 @@ t = input('Today\'s temperature:')
 h = input('Today\'s humidity:')
 w = input('Today\'s wind speed:')
 user_input = np.array([t, h, w]).reshape(1, -1)
-print "Tomorrow's temperature: %f" % clf.predict(user_input)
+print("Tomorrow's temperature: {}".format(clf.predict(user_input)))
