@@ -56,8 +56,9 @@ plt.legend([real, predicted], ['Real', 'Predicted'])
 plt.show()
 
 #predict the number of the user input
-t = input('Today\'s temperature:')
-h = input('Today\'s humidity:')
-w = input('Today\'s wind speed:')
+t = float(input('Today\'s temperature:'))
+h = float(input('Today\'s humidity:'))
+w = float(input('Today\'s wind speed:'))
+
 user_input = np.array([t, h, w]).reshape(1, -1)
 print("Tomorrow's temperature: {}".format(clf.predict(user_input)))
