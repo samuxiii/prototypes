@@ -1,4 +1,3 @@
-// Example program
 #include <iostream>
 
 struct BST

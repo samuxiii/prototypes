@@ -1,7 +1,5 @@
-// Example program
 #include <iostream>
 #include <string>
-#include <random>
 
 struct Node 
 {
