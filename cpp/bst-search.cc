@@ -77,6 +77,32 @@ void depthFirstSearch(BST bst)
     }
 }
 
+//we use container queue
+void breadthFirstSearch(BST bst)
+{
+    std::queue<BST::Node*> q;
+    //store root in container
+    q.push(bst.root);
+    
+    std::cout << "Breadth First:" << std::endl;
+    
+    while(!q.empty())
+    {
+        auto node = q.front();
+        q.pop();
+                
+        if (node != nullptr)
+        {        
+            //store children
+            q.push(node->left);
+            q.push(node->right);
+            
+            //do something with node
+            std::cout << node->key << std::endl;
+        }
+    }
+}
+
 int main()
 {
     BST bst;
@@ -89,5 +115,6 @@ int main()
     bst.insert(8);
     bst.print();
  
-    depthFirstSearch(bst);   
+    depthFirstSearch(bst);
+    breadthFirstSearch(bst);
 }
