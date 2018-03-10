@@ -14,16 +14,19 @@ if __name__ == "__main__":
     env = gym.make('CartPole-v0')
 
     for i_episode in range(5):
-        observation = env.reset()
-        for t in range(100):
-            env.render()
-            print("observation (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(observation))
+        state = env.reset()
 
+        for t in range(1,100):
+            env.render()
+            print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
+
+            # 0->left, 1->right
             action = env.action_space.sample()
             print("action: {}".format(action))
-            observation, reward, done, info = env.step(action)
+
+            next_state, reward, done, info = env.step(action)
             if done:
-                print("Episode finished after {} timesteps".format(t+1))
+                print("Episode finished after {} timesteps".format(t))
                 break
     
     sleep(2)
