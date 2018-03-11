@@ -20,7 +20,7 @@ class Agent:
         learning_rate = 0.01
 
         model = Sequential()
-        model.add(Dense(24, input_dim=features, activation='relu'))
+        model.add(Dense(2, input_dim=features, activation='relu'))
         model.compile(loss='mse', optimizer=Adam(lr=learning_rate))
 
         return model
@@ -33,11 +33,11 @@ class Agent:
         #fit model from memory
         pass
 
-    def act(self):
+    def act(self, state):
         #predict the action to do
+        action_values = self.model.predict(state)
 
-        #temporary random action
-        return random.randint(0,1)
+        return np.argmax(action_values[0])
 
 
 if __name__ == "__main__":
@@ -54,12 +54,12 @@ if __name__ == "__main__":
 
             #perform the action
             # 0->left, 1->right
-            action = agent.act()
+            action = agent.act(state.reshape(1,-1))
             print("action: {}".format(action))
 
             next_state, reward, done, info = env.step(action)
 
-            #we save the current observation
+            #save the current observation
             agent.remember(state, action, reward, next_state, done)
 
             #update state
