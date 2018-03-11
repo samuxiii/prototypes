@@ -8,6 +8,24 @@ from keras.optimizers import Adam
 from time import sleep
 
 
+class Agent:
+
+    def __init__(self):
+        self.memory = []
+        pass
+
+    def remember(self):
+        #store in memory the different states, actions, rewards...
+        pass
+
+    def replay(self):
+        #fit model from memory
+        pass
+
+    def act(self):
+        #predict the action to do
+        pass
+
 
 if __name__ == "__main__":
 
