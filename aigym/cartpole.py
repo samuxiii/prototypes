@@ -12,11 +12,22 @@ class Agent:
 
     def __init__(self):
         self.memory = []
+        self.model = self.__model()
         pass
 
-    def remember(self):
+    def __model(self):
+        features = 4
+        learning_rate = 0.01
+
+        model = Sequential()
+        model.add(Dense(24, input_dim=features, activation='relu'))
+        model.compile(loss='mse', optimizer=Adam(lr=learning_rate))
+
+        return model
+
+    def remember(self, state, action, reward, next_state, done):
         #store in memory the different states, actions, rewards...
-        pass
+        self.memory.append( (state, action, reward, next_state, done) )
 
     def replay(self):
         #fit model from memory
