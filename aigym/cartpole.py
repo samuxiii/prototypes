@@ -24,12 +24,15 @@ class Agent:
 
     def act(self):
         #predict the action to do
-        pass
+
+        #temporary random action
+        return random.randint(0,1)
 
 
 if __name__ == "__main__":
 
     env = gym.make('CartPole-v0')
+    agent = Agent()
 
     for i_episode in range(5):
         state = env.reset()
@@ -39,7 +42,7 @@ if __name__ == "__main__":
             print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
 
             # 0->left, 1->right
-            action = env.action_space.sample()
+            action = agent.act()
             print("action: {}".format(action))
 
             next_state, reward, done, info = env.step(action)
