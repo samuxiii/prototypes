@@ -41,13 +41,27 @@ if __name__ == "__main__":
             env.render()
             print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
 
+            #perform the action
             # 0->left, 1->right
             action = agent.act()
             print("action: {}".format(action))
 
             next_state, reward, done, info = env.step(action)
+
+            #we save the current observation
+            agent.remember(state, action, reward, next_state, done)
+
+            #update state
+            state = next_state
+
+            #evaluate
             if done:
                 print("Episode finished after {} timesteps".format(t))
                 break
-    
+
+        #at the end of episode, train the model
+        agent.replay()
+   
+    #before exit
     sleep(2)
+
