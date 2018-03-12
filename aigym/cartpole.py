@@ -13,7 +13,6 @@ class Agent:
     def __init__(self):
         self.memory = []
         self.model = self.__model()
-        pass
 
     def __model(self):
         features = 4
@@ -36,7 +35,7 @@ class Agent:
         gamma = 0.90
 
         #take care the memory could be big, so using minibatch
-        size = 16 if len(self.memory) > 16 else len(self.memory)
+        size = 32 if len(self.memory) > 32 else len(self.memory)
         minibatch = random.sample(self.memory, size)
 
         for state, action, reward, next_state, done in minibatch:
@@ -67,13 +66,16 @@ if __name__ == "__main__":
 
     env = gym.make('CartPole-v0')
     agent = Agent()
+    
+    solved = False
 
-    for i_episode in range(5):
+    for episode in range(100):
         state = env.reset()
+        total_reward = 0
 
-        for t in range(1,100):
-            env.render()
-            print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
+        for step in range(1,200):
+            #env.render()
+            #print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
 
             #row vector
             state = state.reshape(1, -1)
@@ -81,7 +83,7 @@ if __name__ == "__main__":
             #perform the action
             # 0->left, 1->right
             action = agent.act(state)
-            print("action: {}".format(action))
+            #print("action: {}".format(action))
 
             next_state, reward, done, info = env.step(action)
 
@@ -94,10 +96,18 @@ if __name__ == "__main__":
             #update state
             state = next_state
 
+            #update total reward
+            total_reward += reward
+
             #evaluate
             if done:
-                print("Episode finished after {} timesteps".format(t))
+                print("Episode: {} Reward: {}".format(episode, total_reward))
                 break
+
+        #solved when reward >= 195 before 100 episodes
+        if total_reward > 195:
+            print("SOLVED!!!")
+            break
 
         #at the end of episode, train the model
         agent.replay()
