@@ -12,6 +12,7 @@ class Agent:
 
     def __init__(self):
         self.memory = []
+        self.epsilon = 1.0 #exploration rate
         self.model = self.__model()
 
     def __model(self):
@@ -54,8 +55,15 @@ class Agent:
             #train the model
             self.model.fit(state, target, epochs=1, verbose=0)
 
+        #decrease exploration rate
+        if self.epsilon > 0.01:
+            self.epsilon *= 0.99
+
 
     def act(self, state):
+        if self.epsilon > np.random.rand():
+            return random.randint(0,1)
+
         #predict the action to do
         action_values = self.model.predict(state)
 
@@ -69,7 +77,7 @@ if __name__ == "__main__":
     
     solved = False
 
-    for episode in range(100):
+    for episode in range(1000):
         state = env.reset()
         total_reward = 0
 
@@ -101,7 +109,7 @@ if __name__ == "__main__":
 
             #evaluate
             if done:
-                print("Episode: {} Reward: {}".format(episode, total_reward))
+                print("Episode: {} Reward: {} Epsilon: {:.3f}".format(episode, total_reward, agent.epsilon))
                 break
 
         #solved when reward >= 195 before 100 episodes
