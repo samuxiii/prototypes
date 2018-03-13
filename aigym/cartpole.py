@@ -20,7 +20,8 @@ class Agent:
         learning_rate = 0.01
 
         model = Sequential()
-        model.add(Dense(2, input_dim=features, activation='relu'))
+        model.add(Dense(32, input_dim=features, kernel_initializer='truncated_normal'))
+        model.add(Dense(2, kernel_initializer='truncated_normal'))
 
         #the loss function will be MSE between the action-value Q
         model.compile(loss='mse', optimizer=Adam(lr=learning_rate))
