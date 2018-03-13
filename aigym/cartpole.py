@@ -34,27 +34,31 @@ class Agent:
 
     def replay(self):
         #fit model from memory
-        gamma = 0.90
+        gamma = 1.0
 
         #take care the memory could be big, so using minibatch
-        size = 32 if len(self.memory) > 32 else len(self.memory)
-        minibatch = random.sample(self.memory, size)
+        min_size = 64
+        minibatch = random.sample(self.memory, min(min_size, len(self.memory)))
+        x_batch, y_batch = [], []
 
         for state, action, reward, next_state, done in minibatch:
+
+            target = self.model.predict(state)
 
             if not done: #calculate discounted reward
                 action_values = self.model.predict(next_state)[0]
                 #following the formula of action-value expectation
                 reward = reward + gamma * np.amax(action_values)
 
-            target = self.model.predict(state)
-
-            #customize the reward for this certain action using 
-            #the one found in the memory
+            #customize the obtained reward with the calculated
             target[0][action] = reward
 
-            #train the model
-            self.model.fit(state, target, epochs=1, verbose=0)
+            #append
+            x_batch.append(state[0])
+            y_batch.append(target[0])
+
+        #train the model
+        self.model.fit(np.array(x_batch), np.array(y_batch), verbose=0)
 
         #decrease exploration rate
         if self.epsilon > 0.01:
