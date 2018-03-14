@@ -80,7 +80,7 @@ class Agent:
 
 if __name__ == "__main__":
 
-    env = gym.make('CartPole-v0')
+    env = gym.make('CartPole-v1')
     agent = Agent()
     
     total_wins = 0
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         #row vector
         state = state.reshape(1, -1)
 
-        for step in range(1, 300):
+        for step in range(1, 500):
             #env.render()
 
             #perform the action
