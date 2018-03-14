@@ -20,11 +20,12 @@ class Agent:
         learning_rate = 0.01
 
         model = Sequential()
-        model.add(Dense(32, input_dim=features, kernel_initializer='truncated_normal'))
-        model.add(Dense(2, kernel_initializer='truncated_normal'))
+        model.add(Dense(32, input_dim=features, activation='tanh', kernel_initializer='truncated_normal'))
+        model.add(Dense(64, activation='tanh', kernel_initializer='truncated_normal'))
+        model.add(Dense(2, activation='linear', kernel_initializer='truncated_normal'))
 
         #the loss function will be MSE between the action-value Q
-        model.compile(loss='mse', optimizer=Adam(lr=learning_rate))
+        model.compile(loss='mse', optimizer=Adam(lr=learning_rate, decay=0.01))
 
         return model
 
@@ -35,10 +36,10 @@ class Agent:
     def replay(self):
         #fit model from memory
         gamma = 1.0
+        max_batch_size = 64
 
         #take care the memory could be big, so using minibatch
-        min_size = 64
-        minibatch = random.sample(self.memory, min(min_size, len(self.memory)))
+        minibatch = random.sample(self.memory, min(max_batch_size, len(self.memory)))
         list_x_batch, list_y_batch = [], []
 
         for state, action, reward, next_state, done in minibatch:
@@ -64,7 +65,7 @@ class Agent:
 
         #decrease exploration rate
         if self.epsilon > 0.01:
-            self.epsilon *= 0.99
+            self.epsilon *= 0.997
 
 
     def act(self, state):
@@ -72,9 +73,9 @@ class Agent:
             return random.randint(0,1)
 
         #predict the action to do
-        action_values = self.model.predict(state)
+        action_values = self.model.predict(state)[0]
 
-        return np.argmax(action_values[0])
+        return np.argmax(action_values)
 
 
 if __name__ == "__main__":
