@@ -82,18 +82,15 @@ if __name__ == "__main__":
     env = gym.make('CartPole-v0')
     agent = Agent()
     
-    solved = False
+    total_wins = 0
 
     for episode in range(1000):
         state = env.reset()
         #row vector
         state = state.reshape(1, -1)
 
-        total_reward = 0
-
         for step in range(1, 300):
             #env.render()
-            #print("state (cart_pos, cart_vel, pole_ang, pol_vel):\n{}".format(state))
 
             #perform the action
             # 0->left, 1->right
@@ -111,18 +108,13 @@ if __name__ == "__main__":
             #update state
             state = next_state
 
-            #update total reward
-            total_reward += reward
-
             #evaluate
             if done:
-                print("Episode: {} Reward: {} Epsilon: {:.3f}".format(episode, total_reward, agent.epsilon))
+                #solved when reward >= 195 before 100 episodes
+                solved = 'SOLVED!!' if step > 195 else ''
+                print("Episode: {} Step: {} Epsilon: {:.3f} {}".format(episode, step, agent.epsilon, solved))
                 break
 
-        #solved when reward >= 195 before 100 episodes
-        if total_reward > 195:
-            print("SOLVED!!!")
-            #break
 
         #at the end of episode, train the model
         agent.replay()
