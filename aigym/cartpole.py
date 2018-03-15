@@ -112,10 +112,12 @@ if __name__ == "__main__":
             #evaluate
             if done:
                 #solved when reward >= 195 before 100 episodes
-                solved = ''
                 if step > 195:
                     solved = 'SOLVED'
                     total_wins += 1
+                else:
+                    solved = ''
+                    total_wins = 0
 
                 print("Episode: {} Step: {} Epsilon: {:.3f} {}".format(episode, step, agent.epsilon, solved))
                 break
@@ -124,7 +126,7 @@ if __name__ == "__main__":
         #at the end of episode, train the model
         agent.replay()
 
-        #end game
+        #end game when 100 wins in a row
         if total_wins == 100:
             print("You win!!")
             break
