@@ -11,6 +11,35 @@ print(env.observation_space.n)
 print(env.action_space.n)
 time.sleep(1)
 
+def policy():
+    states = 64
+    action = 4
+    P = np.array(i[64,4])
+
+    #corners
+    if s == 0:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 0, 1/2, 1/2, 0
+    elif s == 7:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 1/2, 1/2, 0, 0
+    elif s == 56:
+         P[s]0], P[s][1], P[s][2], P[s][3] = 0, 0, 1/2, 1/2
+    elif s == 63:
+         P[s]0], P[s][1], P[s][2], P[s][3] = 1/2, 0, 0, 1/2
+    #sides
+    elif s in [1,2,3,4,5,6]:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 1/3, 1/3, 1/3, 0
+    elif s in [57,58,59,60,61,62]:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 1/3, 0, 1/3, 1/3
+    elif s in [8,16,24,32,40,48]:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 0, 1/3, 1/3, 1/3
+    elif s in [15,23,31,39,47,55]:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 1/3, 1/3, 0, 1/3
+    #other
+    else:
+        P[s]0], P[s][1], P[s][2], P[s][3] = 1/4, 1/4, 1/4, 1/4
+
+    return P
+
 #Iterative Policy Evaluation
 def policy_evaluation(num_states):
     gamma = 1.0
@@ -70,7 +99,7 @@ def getAction(state, V):
     #TODO 
     return random.randint(0,3)
 
-for i in range(1):
+for i in range(10):
     os.system('clear')
     env.render()
     state = env.reset()
