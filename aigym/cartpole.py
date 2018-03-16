@@ -1,3 +1,4 @@
+import os
 import random
 import gym
 import numpy as np
@@ -20,9 +21,9 @@ class Agent:
         learning_rate = 0.01
 
         model = Sequential()
-        model.add(Dense(32, input_dim=features, activation='tanh', kernel_initializer='truncated_normal'))
-        model.add(Dense(64, activation='tanh', kernel_initializer='truncated_normal'))
-        model.add(Dense(2, activation='linear', kernel_initializer='truncated_normal'))
+        model.add(Dense(8, input_dim=features, activation='tanh'))
+        model.add(Dense(16, activation='tanh'))
+        model.add(Dense(2, activation='linear'))
 
         #the loss function will be MSE between the action-value Q
         model.compile(loss='mse', optimizer=Adam(lr=learning_rate, decay=0.01))
@@ -35,7 +36,7 @@ class Agent:
 
     def replay(self):
         #fit model from memory
-        gamma = 1.0
+        gamma = 1.0 #importance of the next reward
         max_batch_size = 64
 
         #take care the memory could be big, so using minibatch
@@ -80,8 +81,16 @@ class Agent:
 
 if __name__ == "__main__":
 
+    backupfile = 'weights.hdf5'
+    trained = False
+
     env = gym.make('CartPole-v1')
     agent = Agent()
+
+    if os.path.isfile(backupfile):
+        print("Already trained. Recovering weights from backup")
+        agent.model.load_weights(backupfile)
+        trained = True
     
     total_wins = 0
 
@@ -90,7 +99,7 @@ if __name__ == "__main__":
         #row vector
         state = state.reshape(1, -1)
 
-        for step in range(1, 500):
+        for step in range(1, 700):
             #env.render()
 
             #perform the action
@@ -124,11 +133,13 @@ if __name__ == "__main__":
 
 
         #at the end of episode, train the model
-        agent.replay()
+        if not trained:
+            agent.replay()
 
         #end game when 100 wins in a row
         if total_wins == 100:
             print("You win!!")
+            agent.model.save_weights(backupfile)
             break
 
     #before exit
