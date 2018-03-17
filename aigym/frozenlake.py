@@ -51,22 +51,22 @@ def getClosest(state):
     #return left, down, right, up
     #corners
     if state == 0:
-        return 0, 8,  1, 0
+        return -1, 8,  1, -1
     elif s == 7:
-        return 6,  15, 0, 0
+        return 6,  15, -1, -1
     elif s == 56:
-        return 0, 0, 57, 48
+        return -1, -1, 57, 48
     elif s == 63:
-        return 62, 0, 0,  55
+        return 62, -1, -1,  55
     #sides
     elif s in [1,2,3,4,5,6]:
-        return state-1, state+8, state+1, 0
+        return state-1, state+8, state+1, -1
     elif s in [57,58,59,60,61,62]:
-        return state-1, 0, state+1, state-8
+        return state-1, -1, state+1, state-8
     elif s in [8,16,24,32,40,48]:
-        return 0, state+8, state+1, state-8
+        return -1, state+8, state+1, state-8
     elif s in [15,23,31,39,47,55]:
-        return state-1, state+8, 0, state-8
+        return state-1, state+8, -1, state-8
     #other
     else:
         return state-1, state+8, state+1, state-8
@@ -85,11 +85,11 @@ def policy_evaluation(num_states, policy):
             v = V[s]
             left, down, right, up = getClosest(state)
 
-            V[s] = (policy[s][0] * V[left] +
-                    policy[s][1] * V[down] +
-                    policy[s][2] * V[right] +
-                    policy[s][3] * V[up])
-
+            pl = policy[s][0] * V[left] if left != -1 else 0
+            pd = policy[s][1] * V[down] if down != -1 else 0
+            pr = policy[s][2] * V[right] if right != -1 else 0
+            pu = policy[s][3] * V[up] if up != -1 else 0
+            V[s] = pl + pd + pr + pu
             #
             diff = max(diff, np.abs(v - V[s]))
 
