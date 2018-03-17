@@ -101,16 +101,17 @@ def policy_evaluation(num_states, policy):
 
 
 def getAction(state, V):
-    #TODO 
-    return random.randint(0,3)
+    #get better action
+    left, down, right, up = getClosest(state)
+    return np.argmax([V[left], V[down], V[right], V[up]]) 
 
 for i in range(10):
     os.system('clear')
     env.render()
     state = env.reset()
 
-    #policy = equiprobable_policy()
-    policy = certain_policy()
+    policy = equiprobable_policy()
+    #policy = certain_policy()
     V = policy_evaluation(env.observation_space.n, policy)
     print("V: {}".format(V))
     action = getAction(state, V)
