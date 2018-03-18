@@ -10,7 +10,6 @@ def equiprobable_policy(num_states, num_actions):
     return np.ones([num_states, num_actions]) / num_actions
 
 #Iterative Policy Evaluation
-
 def policy_evaluation(env, policy):
     gamma = 1.0
     theta = 1e-4 #max difference between old and new values
@@ -62,11 +61,6 @@ def policy_improvement(env, V):
 
     return policy
 
-def getAction(state, V):
-    #get better action
-    return random.randint(0,3)
-
-
 def policy_iteration(env):
     gamma = 1.0
     theta = 1e-7
@@ -86,9 +80,13 @@ def policy_iteration(env):
             #update the policy
             policy = new_policy.copy()
 
-        print("delta: {}".format(delta))
+        print("delta optimal policy: {}".format(delta))
 
     return policy, V
+
+def getAction(policy, state):
+    #get better action from policy
+    return np.argmax(policy[state])
 
 
 def main():
@@ -110,7 +108,7 @@ def main():
         env.render()
         state = env.reset()
     
-        action = getAction(state, V)
+        action = getAction(policy, state)
         next_state, reward, done, info = env.step(action)
     
         state = next_state
