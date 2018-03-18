@@ -5,12 +5,6 @@ import gym
 from frozenlake import FrozenLakeEnv
 import numpy as np
 
-env = FrozenLakeEnv(map_name='8x8')
-
-# print the state space and action space
-print(env.nS)
-print(env.nA)
-time.sleep(1)
 
 def equiprobable_policy(num_states, num_actions):
     return np.ones([num_states, num_actions]) / num_actions
@@ -34,6 +28,8 @@ def policy_evaluation(env, policy):
                     v += action_prob * prob * (reward + gamma * V[next_state])
             
             delta = max(delta, np.abs(v - V[s]))
+            #update V[s]
+            V[s] = v
 
         #print("Loss: {:.6f}".format(diff))
         if delta < theta:
@@ -58,7 +54,7 @@ def policy_improvement(env, V):
     for s in range(env.nS):
         q = obtain_q_from_v(env, V, s)
         #retrieve best actions in a list
-        best_actiona = np.argwhere(q == np.max(q)).flatten()
+        best_actions = np.argwhere(q == np.max(q)).flatten()
         #get a list of probabilities actions
         probs = np.sum([np.eye(env.nA)[i] for i in best_actions], axis=0)
         #normalize them to 1 and set
@@ -73,7 +69,7 @@ def getAction(state, V):
 
 def policy_iteration(env):
     gamma = 1.0
-    theta = 1e-8
+    theta = 1e-7
     policy = equiprobable_policy(env.nS, env.nA)
 
     while True:
@@ -86,30 +82,47 @@ def policy_iteration(env):
 
         if delta < theta:
             break
+        else:
+            #update the policy
+            policy = new_policy.copy()
+
+        print("delta: {}".format(delta))
 
     return policy, V
 
 
-for i in range(100):
-    os.system('clear')
-    env.render()
-    state = env.reset()
+def main():
 
-    policy = equiprobable_policy(env.nS, env.nA)
-    V = policy_evaluation(env, policy)
+    env = FrozenLakeEnv(map_name='8x8')
+
+    # print the state space and action space
+    print(env.nS)
+    print(env.nA)
+
+    V, policy = policy_iteration(env)
     print("V: {}".format(V))
-    action = getAction(state, V)
+    print("policy: {}".format(policy))
+ 
+    time.sleep(1)
 
-    next_state, reward, done, info = env.step(action)
-
-    state = next_state
-    time.sleep(0.2)
-
-    #end
-    if done:
+    for i in range(100):
         os.system('clear')
-        env.render() #print last position
-        time.sleep(2)
-        break
+        env.render()
+        state = env.reset()
+    
+        action = getAction(state, V)
+        next_state, reward, done, info = env.step(action)
+    
+        state = next_state
+        time.sleep(0.2)
+    
+        #end
+        if done:
+            os.system('clear')
+            env.render() #print last position
+            time.sleep(2)
+            break
+    
 
-
+if __name__ == "__main__":
+    main()
