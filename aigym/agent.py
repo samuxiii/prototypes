@@ -8,21 +8,19 @@ import numpy as np
 env = FrozenLakeEnv(map_name='8x8')
 
 # print the state space and action space
-print(env.observation_space.n)
-print(env.action_space.n)
+print(env.nS)
+print(env.nA)
 time.sleep(1)
 
-def equiprobable_policy():
-    states = 64
-    actions = 4
-    return np.ones([states, actions]) / actions
+def equiprobable_policy(num_states, num_actions):
+    return np.ones([num_states, num_actions]) / num_actions
 
 #Iterative Policy Evaluation
 
-def policy_evaluation(num_states, policy):
+def policy_evaluation(env, policy):
     gamma = 1.0
     theta = 1e-4 #max difference between old and new values
-    states = range(0, num_states)
+    states = range(env.nS)
     V = np.random.rand(64) #init
 
     while True:
@@ -50,8 +48,8 @@ for i in range(100):
     env.render()
     state = env.reset()
 
-    policy = equiprobable_policy()
-    V = policy_evaluation(env.observation_space.n, policy)
+    policy = equiprobable_policy(env.nS, env.nA)
+    V = policy_evaluation(env, policy)
     print("V: {}".format(V))
     action = getAction(state, V)
 
