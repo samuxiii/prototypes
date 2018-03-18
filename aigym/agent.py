@@ -21,19 +21,22 @@ def policy_evaluation(env, policy):
     gamma = 1.0
     theta = 1e-4 #max difference between old and new values
     states = range(env.nS)
-    V = np.random.rand(64) #init
+    V = np.zeros(env.nS) #init
 
     while True:
-        diff = 0
+        delta = 0
 
         for s in states:
-            v = V[s]
-            #TODO
-            #
-            diff = max(diff, np.abs(v - V[s]))
+            v = 0
+            for a, action_prob in enumerate(policy[s]):
+                #env.P has been exposed (MDP of frozenlake.py)
+                for prob, next_state, reward, done in env.P[s][a]:
+                    v += action_prob * prob * (reward + gamma * V[next_state])
+            
+            delta = max(delta, np.abs(v - V[s]))
 
         #print("Loss: {:.6f}".format(diff))
-        if diff < theta:
+        if delta < theta:
             break
 
     return V
