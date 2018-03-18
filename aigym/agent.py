@@ -41,6 +41,16 @@ def policy_evaluation(env, policy):
 
     return V
 
+def obtain_q_from_v(env, V, s):
+    gamma = 1.0
+    q = np.zeros(env.nA)
+
+    for a in range(env.nA):
+        #using MDP getting info to calculate q
+        for prob, next_state, reward, done in env.P[s][a]:
+            q[a] += prob * (reward + gamma * V[next_state])
+
+    return q
 
 def getAction(state, V):
     #get better action
