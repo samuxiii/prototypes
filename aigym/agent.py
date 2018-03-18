@@ -117,26 +117,28 @@ def main():
  
     time.sleep(1)
 
-    state = env.reset()
-    while True:
-        os.system('clear')
-        env.render()
-   
-        print("\ncurrent state: {}".format(state))
-        action = getAction(policy, state)
-        next_state, reward, done, info = env.step(action)
-    
-        state = next_state
-        time.sleep(0.2)
-    
-        #end
-        if done:
+    #episodes
+    for e in range(3):
+        state = env.reset()
+        while True:
             os.system('clear')
-            env.render() #print last position
-            print("\nFuck Yeah!!")
-            time.sleep(2)
-            break
-    
+            env.render()
+       
+            print("\ncurrent state: {}".format(state))
+            action = getAction(policy, state)
+            next_state, reward, done, info = env.step(action)
+        
+            state = next_state
+            time.sleep(0.2)
+        
+            #end
+            if done:
+                os.system('clear')
+                env.render() #print last position
+                print("\nFuck Yeah!!")
+                time.sleep(2)
+                break
+        
 
 if __name__ == "__main__":
     main()
