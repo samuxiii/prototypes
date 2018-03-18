@@ -52,6 +52,20 @@ def obtain_q_from_v(env, V, s):
 
     return q
 
+def policy_improvement(env, V):
+    policy = np.zeros([env.nS, env.nA])
+
+    for s in range(env.nS):
+        q = obtain_q_from_v(env, V, s)
+        #retrieve best actions in a list
+        best_actiona = np.argwhere(q == np.max(q)).flatten()
+        #get a list of probabilities actions
+        probs = np.sum([np.eye(env.nA)[i] for i in best_actions], axis=0)
+        #normalize them to 1 and set
+        policy[s] = probs/len(best_actions)
+
+    return policy
+
 def getAction(state, V):
     #get better action
     return random.randint(0,3)
