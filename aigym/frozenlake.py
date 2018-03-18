@@ -1,131 +1,133 @@
-import os
-import time
-import random
-import gym
 import numpy as np
+import sys
+from six import StringIO, b
 
-env = gym.make('FrozenLake8x8-v0')
+from gym import utils
+from gym.envs.toy_text import discrete
 
-# print the state space and action space
-print(env.observation_space.n)
-print(env.action_space.n)
-time.sleep(1)
+LEFT = 0
+DOWN = 1
+RIGHT = 2
+UP = 3
 
-def equiprobable_policy():
-    states = 64
-    actions = 4
-    return np.ones([states, actions]) / actions
+MAPS = {
+    "4x4": [
+        "SFFF",
+        "FHFH",
+        "FFFH",
+        "HFFG"
+    ],
+    "8x8": [
+        "SFFFFFFF",
+        "FFFFFFFF",
+        "FFFHFFFF",
+        "FFFFFHFF",
+        "FFFHFFFF",
+        "FHHFFFHF",
+        "FHFFHFHF",
+        "FFFHFFFG"
+    ],
+}
 
-def certain_policy():
-    states = 64
-    actions = 4
-    P = np.zeros([states, actions])
+class FrozenLakeEnv(discrete.DiscreteEnv):
+    """
+    Winter is here. You and your friends were tossing around a frisbee at the park
+    when you made a wild throw that left the frisbee out in the middle of the lake.
+    The water is mostly frozen, but there are a few holes where the ice has melted.
+    If you step into one of those holes, you'll fall into the freezing water.
+    At this time, there's an international frisbee shortage, so it's absolutely imperative that
+    you navigate across the lake and retrieve the disc.
+    However, the ice is slippery, so you won't always move in the direction you intend.
+    The surface is described using a grid like the following
+        SFFF
+        FHFH
+        FFFH
+        HFFG
+    S : starting point, safe
+    F : frozen surface, safe
+    H : hole, fall to your doom
+    G : goal, where the frisbee is located
+    The episode ends when you reach the goal or fall in a hole.
+    You receive a reward of 1 if you reach the goal, and zero otherwise.
+    """
 
-    for s in range(0, states):
-       #corners
-       if s == 0:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 0, 1/2, 1/2, 0
-       elif s == 7:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 1/2, 1/2, 0, 0
-       elif s == 56:
-            P[s][0], P[s][1], P[s][2], P[s][3] = 0, 0, 1/2, 1/2
-       elif s == 63:
-            P[s][0], P[s][1], P[s][2], P[s][3] = 1/2, 0, 0, 1/2
-       #sides
-       elif s in [1,2,3,4,5,6]:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 1/3, 1/3, 1/3, 0
-       elif s in [57,58,59,60,61,62]:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 1/3, 0, 1/3, 1/3
-       elif s in [8,16,24,32,40,48]:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 0, 1/3, 1/3, 1/3
-       elif s in [15,23,31,39,47,55]:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 1/3, 1/3, 0, 1/3
-       #other
-       else:
-           P[s][0], P[s][1], P[s][2], P[s][3] = 1/4, 1/4, 1/4, 1/4
+    metadata = {'render.modes': ['human', 'ansi']}
 
-    return P
+    def __init__(self, desc=None, map_name="4x4",is_slippery=True):
+        if desc is None and map_name is None:
+            raise ValueError('Must provide either desc or map_name')
+        elif desc is None:
+            desc = MAPS[map_name]
+        self.desc = desc = np.asarray(desc,dtype='c')
+        self.nrow, self.ncol = nrow, ncol = desc.shape
+        self.reward_range = (0, 1)
 
-#Iterative Policy Evaluation
-def getClosest(state):
-    #return left, down, right, up
-    #corners
-    if state == 0:
-        return -1, 8,  1, -1
-    elif s == 7:
-        return 6,  15, -1, -1
-    elif s == 56:
-        return -1, -1, 57, 48
-    elif s == 63:
-        return 62, -1, -1,  55
-    #sides
-    elif s in [1,2,3,4,5,6]:
-        return state-1, state+8, state+1, -1
-    elif s in [57,58,59,60,61,62]:
-        return state-1, -1, state+1, state-8
-    elif s in [8,16,24,32,40,48]:
-        return -1, state+8, state+1, state-8
-    elif s in [15,23,31,39,47,55]:
-        return state-1, state+8, -1, state-8
-    #other
-    else:
-        return state-1, state+8, state+1, state-8
+        nA = 4
+        nS = nrow * ncol
 
+        isd = np.array(desc == b'S').astype('float64').ravel()
+        isd /= isd.sum()
 
-def policy_evaluation(num_states, policy):
-    gamma = 1.0
-    theta = 1e-4 #max difference between old and new values
-    states = range(0, num_states)
-    V = np.random.rand(64) #init
+        P = {s : {a : [] for a in range(nA)} for s in range(nS)}
 
-    while True:
-        diff = 0
+        def to_s(row, col):
+            return row*ncol + col
+        
+        def inc(row, col, a):
+            if a==0: # left
+                col = max(col-1,0)
+            elif a==1: # down
+                row = min(row+1,nrow-1)
+            elif a==2: # right
+                col = min(col+1,ncol-1)
+            elif a==3: # up
+                row = max(row-1,0)
+            return (row, col)
 
-        for s in states:
-            v = V[s]
-            left, down, right, up = getClosest(state)
+        for row in range(nrow):
+            for col in range(ncol):
+                s = to_s(row, col)
+                for a in range(4):
+                    li = P[s][a]
+                    letter = desc[row, col]
+                    if letter in b'GH':
+                        li.append((1.0, s, 0, True))
+                    else:
+                        if is_slippery:
+                            for b in [(a-1)%4, a, (a+1)%4]:
+                                newrow, newcol = inc(row, col, b)
+                                newstate = to_s(newrow, newcol)
+                                newletter = desc[newrow, newcol]
+                                done = bytes(newletter) in b'GH'
+                                rew = float(newletter == b'G')
+                                li.append((1.0/3.0, newstate, rew, done))
+                        else:
+                            newrow, newcol = inc(row, col, a)
+                            newstate = to_s(newrow, newcol)
+                            newletter = desc[newrow, newcol]
+                            done = bytes(newletter) in b'GH'
+                            rew = float(newletter == b'G')
+                            li.append((1.0, newstate, rew, done))
 
-            pl = policy[s][0] * V[left] if left != -1 else 0
-            pd = policy[s][1] * V[down] if down != -1 else 0
-            pr = policy[s][2] * V[right] if right != -1 else 0
-            pu = policy[s][3] * V[up] if up != -1 else 0
-            V[s] = pl + pd + pr + pu
-            #
-            diff = max(diff, np.abs(v - V[s]))
+        ''' adaptation from original in order to get MDP '''
+        # obtain one-step dynamics for dynamic programming setting
+        self.P = P
+        ''' end adaptation '''
+        
+        super(FrozenLakeEnv, self).__init__(nS, nA, P, isd)
 
-        #print("Loss: {:.6f}".format(diff))
-        if diff < theta:
-            break
+    def render(self, mode='human'):
+        outfile = StringIO() if mode == 'ansi' else sys.stdout
 
-    return V
+        row, col = self.s // self.ncol, self.s % self.ncol
+        desc = self.desc.tolist()
+        desc = [[c.decode('utf-8') for c in line] for line in desc]
+        desc[row][col] = utils.colorize(desc[row][col], "red", highlight=True)
+        if self.lastaction is not None:
+            outfile.write("  ({})\n".format(["Left","Down","Right","Up"][self.lastaction]))
+        else:
+            outfile.write("\n")
+        outfile.write("\n".join(''.join(line) for line in desc)+"\n")
 
-
-def getAction(state, V):
-    #get better action
-    left, down, right, up = getClosest(state)
-    return np.argmax([V[left], V[down], V[right], V[up]]) 
-
-for i in range(10):
-    os.system('clear')
-    env.render()
-    state = env.reset()
-
-    policy = equiprobable_policy()
-    #policy = certain_policy()
-    V = policy_evaluation(env.observation_space.n, policy)
-    print("V: {}".format(V))
-    action = getAction(state, V)
-
-    next_state, reward, done, info = env.step(action)
-
-    state = next_state
-    time.sleep(0.5)
-
-    #end
-    if done:
-        os.system('clear')
-        env.render() #print last position
-        time.sleep(2)
-        break
-
-
+        if mode != 'human':
+            return outfile
