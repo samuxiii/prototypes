@@ -86,28 +86,43 @@ def policy_iteration(env):
 
 def getAction(policy, state):
     #get better action from policy
+    print("Q(s,a): {}".format(policy[state]))
+    print("action: {}".format(np.argmax(policy[state])))
     return np.argmax(policy[state])
 
 
+def plot_values(V):
+    # reshape value function
+    import matplotlib.pyplot as plt
+    V_sq = np.reshape(V, (8,8))
+    
+    # plot the state-value function
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(111)
+    im = ax.imshow(V_sq, cmap='cool')
+    for (j,i),label in np.ndenumerate(V_sq):
+        ax.text(i, j, np.round(label, 5), ha='center', va='center', fontsize=7)
+    plt.tick_params(bottom='off', left='off', labelbottom='off', labelleft='off')
+    plt.title('State-Value Function')
+    plt.show()
+    
 def main():
 
     env = FrozenLakeEnv(map_name='8x8')
 
-    # print the state space and action space
-    print(env.nS)
-    print(env.nA)
-
-    V, policy = policy_iteration(env)
+    policy, V = policy_iteration(env)
     print("V: {}".format(V))
     print("policy: {}".format(policy))
+    #plot_values(V)
  
     time.sleep(1)
 
-    for i in range(100):
+    state = env.reset()
+    while True:
         os.system('clear')
         env.render()
-        state = env.reset()
-    
+   
+        print("\ncurrent state: {}".format(state))
         action = getAction(policy, state)
         next_state, reward, done, info = env.step(action)
     
@@ -118,6 +133,7 @@ def main():
         if done:
             os.system('clear')
             env.render() #print last position
+            print("Fuck yeah!!")
             time.sleep(2)
             break
     
