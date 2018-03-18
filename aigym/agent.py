@@ -133,7 +133,7 @@ def main():
         if done:
             os.system('clear')
             env.render() #print last position
-            print("Fuck yeah!!")
+            print("\nFuck Yeah!!")
             time.sleep(2)
             break
     
