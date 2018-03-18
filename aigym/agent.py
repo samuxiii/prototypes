@@ -70,6 +70,26 @@ def getAction(state, V):
     #get better action
     return random.randint(0,3)
 
+
+def policy_iteration(env):
+    gamma = 1.0
+    theta = 1e-8
+    policy = equiprobable_policy(env.nS, env.nA)
+
+    while True:
+        V = policy_evaluation(env, policy)
+        new_policy = policy_improvement(env, V)
+
+        #calculate difference between policies and cut when converge under theta
+        nV = policy_evaluation(env, new_policy)
+        delta = np.max(np.abs(V - nV))
+
+        if delta < theta:
+            break
+
+    return policy, V
+
+
 for i in range(100):
     os.system('clear')
     env.render()
