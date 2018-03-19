@@ -86,9 +86,14 @@ def policy_iteration(env):
 
 def getAction(policy, state):
     #get better action from policy
+    q = policy[state]
+    best_actions = np.argwhere(q==np.max(q)).reshape(-1)
+    selected_action = np.random.choice(best_actions)
+
     print("Q(s,a): {}".format(policy[state]))
-    print("action: {}".format(np.argmax(policy[state])))
-    return np.argmax(policy[state])
+    print("actions: {}, selected: {}".format(best_actions, selected_action))
+
+    return selected_action
 
 
 def plot_values(V):
