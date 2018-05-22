@@ -11,6 +11,13 @@ def gettingData():
     data = pd.read_csv(io.StringIO(content.decode('utf-8')))
     return data
 
+def preprocessing(data):
+    #customize index
+    data.snapped_at[0].split()[0]
+    data.snapped_at = data.snapped_at.apply(lambda x: x.split()[0])
+    data.set_index('snapped_at', inplace=True)
+    data.index = pd.to_datetime(data.index)
+
 def main():
     data = gettingData()
 
