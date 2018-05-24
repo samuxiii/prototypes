@@ -1,3 +1,4 @@
+import os
 import io
 import random
 import numpy as np
@@ -5,6 +6,15 @@ import pandas as pd
 import sklearn
 import requests
 
+'''
+Helper function
+'''
+clear = lambda: os.system('clear')
+
+
+'''
+Data functions
+'''
 def gettingData():
     url = "https://www.coingecko.com/price_charts/export/279/eur.csv"
     content = requests.get(url).content
@@ -37,15 +47,22 @@ def preprocessing(data):
             #updating
             rg = slice(dayloc-1, dayloc+2)
             data.loc[idx] = data.iloc[rg].mean()
-            print("Day <{}> updated with the mean".format(idx))
+            print("Day <{}> has been updated with the mean values".format(idx))
 
+
+'''
+Main program
+'''
 def main():
+    clear()
     data = gettingData()
 
     print("\nRetrieved data:")
     print(data.tail())
 
     preprocessing(data)
+
+    print("\n\n")
 
 
 if __name__ == "__main__":
