@@ -50,6 +50,33 @@ def preprocessing(data):
             print("Day <{}> has been updated with the mean values".format(idx))
 
 
+    '''
+    Adding the target for every sample
+    '''
+    new_column = 'closed_price'
+    datab = data.copy()
+    
+    nc = list()
+    
+    for idx in data.index:
+        dayloc = data.index.get_loc(idx)
+        
+        #we put the price in the day after as closed price
+        if dayloc == len(data.index)-1:
+            #last position will not have closed_price
+            closed_price = np.nan
+        else:
+            closed_price = data.iloc[dayloc+1].price
+        
+        nc.append(closed_price)
+    
+    data[new_column] = nc
+    #Delete last because we don't know still the closed price 
+    data = data.drop(data.index[len(data)-1])
+
+    return data
+
+
 '''
 Main program
 '''
@@ -60,7 +87,10 @@ def main():
     print("\nRetrieved data:")
     print(data.tail())
 
-    preprocessing(data)
+    data = preprocessing(data)
+
+    print("\nPreprocessed data:")
+    print(data.tail())
 
     print("\n\n")
 
