@@ -77,20 +77,30 @@ def preprocessing(data):
     return data
 
 
+def get_train_test(data, train_size=0.8):
+    split = round(len(data)*train_size)
+    data_train, data_test = data[:split].copy(), data[split:].copy()
+
+    return data_train, data_test
+
 '''
 Main program
 '''
 def main():
     clear()
-    data = gettingData()
 
+    data = gettingData()
     print("\nRetrieved data:")
     print(data.tail())
 
     data = preprocessing(data)
-
     print("\nPreprocessed data:")
     print(data.tail())
+
+    data_train, data_test = get_train_test(data)
+    print("\nSplitting the data:")
+    print("Size training set: {}".format(data_train.shape[0]))
+    print("Size testing set: {}".format(data_test.shape[0]))
 
     print("\n\n")
 
