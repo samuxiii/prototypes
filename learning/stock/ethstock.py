@@ -6,6 +6,10 @@ import pandas as pd
 import sklearn
 import requests
 import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from keras.layers import Flatten
 
 
 '''
@@ -101,7 +105,6 @@ def build_model():
     model.add(LSTM(32, input_shape=(7, 3) ))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam')
-    model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
 
     return model
 
@@ -123,6 +126,23 @@ def main():
     print("\nSplitting the data:")
     print("Size training set: {}".format(data_train.shape[0]))
     print("Size testing set: {}".format(data_test.shape[0]))
+
+    model = build_model()
+
+    #preparing data
+    features = ['price', 'market_cap', 'total_volume']
+    X_train = prepare_sequence(data_train[features])
+    #TODO: recheck this, it's not as simple as that
+    y_train = data_train.iloc[-len(X_train):].closed_price.values
+
+    #fit the model
+    print("\nTraining...")
+    model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
+
+    #Predicting
+    X_test = prepare_sequence(data_test[features])
+    pred = model.predict(X_test[-1].reshape(1,7,3))
+    print("Prediction tomorrow: {}".format(pred))
 
     print("\n\n")
 
