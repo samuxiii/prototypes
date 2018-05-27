@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import sklearn
 import requests
+import tensorflow as tf
+
 
 '''
 Helper function
@@ -82,6 +84,16 @@ def get_train_test(data, train_size=0.8):
     data_train, data_test = data[:split].copy(), data[split:].copy()
 
     return data_train, data_test
+
+
+def build_model():
+    model = Sequential()
+    model.add(LSTM(32, input_shape=(7, 3) ))
+    model.add(Dense(1))
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
+
+    return model
 
 '''
 Main program
