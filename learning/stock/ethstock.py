@@ -13,6 +13,16 @@ Helper function
 '''
 clear = lambda: os.system('clear')
 
+#Transform the dataset to shapes defined by 7 steps and 3 features
+def prepare_sequence(data):
+    sequence = []
+    sequence_size = 7
+    samples = 0
+    for i in range(0, data.shape[0] - sequence_size + 1):
+        sequence.append(data[i:i+7])
+        samples += 1
+    return np.concatenate(sequence).reshape((samples, sequence_size, data.shape[1]))
+
 
 '''
 Data functions
