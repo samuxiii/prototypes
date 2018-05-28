@@ -133,7 +133,8 @@ def main():
     features = ['price', 'market_cap', 'total_volume']
     X_train = prepare_sequence(data_train[features])
     #TODO: recheck this, it's not as simple as that
-    y_train = data_train.iloc[-len(X_train):].closed_price.values
+    y_train = data_train.iloc[7:].closed_price.values
+    y_train = np.insert(y_train, len(y_train), data_train.iloc[7].closed_price)
 
     #fit the model
     print("\nTraining...")
