@@ -118,6 +118,9 @@ def main():
     print("\nRetrieved data:")
     print(data.tail())
 
+    #Store the last date. Useful for print outs
+    prediction_date = pd.to_datetime(data.iloc[-1].snapped_at).strftime("%Y-%m-%d")
+
     data = preprocessing(data)
     print("\nPreprocessed data:")
     print(data.tail())
@@ -142,8 +145,12 @@ def main():
 
     #Predicting
     X_test = prepare_sequence(data_test[features])
-    pred = model.predict(X_test[-1].reshape(1,7,3))
-    print("Prediction tomorrow: {}".format(pred))
+    last_sequence = X_test[-1]
+    pred = model.predict(last_sequence.reshape(1,7,3))
+
+    print("Calculating prediction for last sequence:")
+    print(last_sequence)
+    print("\nPrediction for {}: {}".format(prediction_date, pred))
 
     print("\n\n")
 
