@@ -10,6 +10,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Flatten
+from keras.models import load_model
 
 
 '''
@@ -108,6 +109,18 @@ def build_model():
 
     return model
 
+def training(model, X, y):
+    modelfile = 'model.h5'
+
+    if (os.path.exists(modelfile)):
+        print("Recovering backed up model..\n")
+        return load_model(modelfile)
+    else:
+        print("Training...\n")
+        model.fit(X, y, epochs=50, batch_size=32, verbose=0)
+        model.save(modelfile)
+        return model
+
 '''
 Main program
 '''
@@ -140,8 +153,7 @@ def main():
     y_train = np.insert(y_train, len(y_train), data_train.iloc[7].closed_price)
 
     #fit the model
-    print("\nTraining...")
-    model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=0)
+    model = training(model, X_train, y_train)
 
     #Predicting
     X_test = prepare_sequence(data_test[features])
