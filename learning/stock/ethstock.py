@@ -94,7 +94,7 @@ def preprocessing(data):
     return data
 
 
-def get_train_test(data, train_size=0.8):
+def get_train_test(data, train_size=0.9):
     split = round(len(data)*train_size)
     data_train, data_test = data[:split].copy(), data[split:].copy()
 
@@ -139,30 +139,26 @@ def main():
     print(data.tail())
 
     data_train, data_test = get_train_test(data)
-    print("\nSplitting the data:")
-    print("Size training set: {}".format(data_train.shape[0]))
-    print("Size testing set: {}".format(data_test.shape[0]))
-
-    model = build_model()
-
     #preparing data
     features = ['price', 'market_cap', 'total_volume']
     X_train = prepare_sequence(data_train[features])
-    #TODO: recheck this, it's not as simple as that
-    y_train = data_train.iloc[7:].closed_price.values
-    y_train = np.insert(y_train, len(y_train), data_train.iloc[7].closed_price)
+    #customize y_train for sequence
+    y_train = data_train.iloc[6:].closed_price.values
+
+    print("Size training set: {}".format(X_train.shape[0]))
 
     #fit the model
+    model = build_model()
     model = training(model, X_train, y_train)
 
     #Predicting
     X_test = prepare_sequence(data_test[features])
-    last_sequence = X_test[-1]
-    pred = model.predict(last_sequence.reshape(1,7,3))
+    last_sequence = X_test[-1].reshape(1,7,3)
+    print("Size testing set: {}".format(X_test.shape[0]))
+    print("Last sequence:\n{}".format(last_sequence))
 
-    print("Calculating prediction for last sequence:")
-    print(last_sequence)
-    print("\nPrediction for {}: {}".format(prediction_date, pred))
+    pred = model.predict(last_sequence)
+    print("\nPrediction for {}: {:.2f}".format(prediction_date, pred[0][0]))
 
     print("\n\n")
 
