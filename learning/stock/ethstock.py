@@ -1,10 +1,12 @@
 import os
 import io
+import math
 import random
 import numpy as np
 import pandas as pd
 import sklearn
 import requests
+from tqdm import tqdm
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
@@ -28,15 +30,28 @@ def prepare_sequence(data):
         samples += 1
     return np.concatenate(sequence).reshape((samples, sequence_size, data.shape[1]))
 
+#Download files
+def download_file(url, filename):
+    r = requests.get(url, stream=True)
+
+    total_size = int(r.headers.get('content-length', 0)); 
+    block_size = 1024
+    total_kb_size = math.ceil(total_size//block_size)
+    
+    wrote = 0 
+    with open(filename, 'wb') as f:
+        for data in tqdm(r.iter_content(block_size), total=total_kb_size , unit='KB', unit_scale=True):
+            wrote = wrote  + len(data)
+            f.write(data)
 
 '''
 Data functions
 '''
 def gettingData():
     url = "https://www.coingecko.com/price_charts/export/279/eur.csv"
-    content = requests.get(url).content
-    data = pd.read_csv(io.StringIO(content.decode('utf-8')))
-    return data
+    datafile = 'eth-eur.csv'
+    download_file(url, datafile)
+    return pd.read_csv(datafile)
 
 def preprocessing(data):
     #customize index
