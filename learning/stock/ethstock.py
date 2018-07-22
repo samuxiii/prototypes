@@ -5,6 +5,7 @@ import random
 import numpy as np
 import pandas as pd
 import sklearn
+from sklearn.preprocessing import StandardScaler
 import requests
 from tqdm import tqdm
 import tensorflow as tf
@@ -108,15 +109,16 @@ def preprocessing(data):
 
     return data
 
-def scale(data, scaler):
+def scale(data_train, data_test):
 
     scaler = StandardScaler()
     data_train_norm, data_test_norm = data_train.copy(), data_test.copy()
+    columns = data_train.columns
 
-    data_train_norm[data.columns] = scaler.fit_transform(data_train[data.columns])
-    data_test_norm[data.columns] = scaler.transform(data_test[data.columns])
+    data_train_norm[columns] = scaler.fit_transform(data_train[columns])
+    data_test_norm[columns] = scaler.transform(data_test[columns])
 
-    return data_train_norm, data_test_norm
+    return data_train_norm, data_test_norm, scaler
 
 
 
@@ -165,6 +167,7 @@ def main():
     print(data.tail())
 
     data_train, data_test = get_train_test(data)
+    data_train, data_test, scaler = scale(data_train, data_test)
     #preparing data
     features = ['price', 'market_cap', 'total_volume']
     X_train = prepare_sequence(data_train[features])
