@@ -108,6 +108,17 @@ def preprocessing(data):
 
     return data
 
+def scale(data, scaler):
+
+    scaler = StandardScaler()
+    data_train_norm, data_test_norm = data_train.copy(), data_test.copy()
+
+    data_train_norm[data.columns] = scaler.fit_transform(data_train[data.columns])
+    data_test_norm[data.columns] = scaler.transform(data_test[data.columns])
+
+    return data_train_norm, data_test_norm
+
+
 
 def get_train_test(data, train_size=0.9):
     split = round(len(data)*train_size)
