@@ -186,8 +186,10 @@ def main():
     print("Size testing set: {}".format(X_test.shape[0]))
     print("Last sequence:\n{}".format(last_sequence))
 
-    pred = model.predict(last_sequence)
-    print("\nPrediction for {}: {:.2f}".format(prediction_date, pred[0][0]))
+    pred = model.predict(last_sequence).item((0,0))
+    #recover real value (not normalized)
+    pred = scaler.inverse_transform(np.array([[pred,0,0,0]]))
+    print("\nPrediction for {}: {:.2f}".format(prediction_date, pred.item((0,0))))
 
     print("\n\n")
 
