@@ -6,3 +6,4 @@ pandas==0.21.0
 requests==2.18.3
 scikit_learn==0.19.2
 tqdm==4.25.0
+gunicorn==19.9.0
