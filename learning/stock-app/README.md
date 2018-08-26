@@ -21,3 +21,11 @@ https://stock-app-samuxiii.herokuapp.com/ | https://git.heroku.com/stock-app-sam
 '''
 heroku git:remote -a stock-app-samuxiii
 '''
+3. Try it works
+'''
+heroku local web
+'''
+4. Push it
+'''
+git push heroku
+'''
