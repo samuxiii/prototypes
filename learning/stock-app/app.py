@@ -51,3 +51,8 @@ def predictStock(stock, helper):
     print(result)
     return result
 
+# HTTP API
+app = Flask(__name__)
+
+if __name__ == '__main__':
+    app.run()
