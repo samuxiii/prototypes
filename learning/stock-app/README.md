@@ -6,26 +6,26 @@ Server prototype with a Stock predictor which uses Flask, Tensorflow, Pandas, Nu
 
 ## Steps to run the prototype
 0. Create _Procefile_ with content
-'''
+```
 web: gunicorn app:app
-'''
+```
 1. Create the app in heroku
-'''
+```
 heroku create stock-app-samuxiii --buildpack heroku/python
-'''
+```
 The output will be something similar to
-'''
+```
 https://stock-app-samuxiii.herokuapp.com/ | https://git.heroku.com/stock-app-samuxiii.git
-'''
+```
 2. Add the remote to git repository
-'''
+```
 heroku git:remote -a stock-app-samuxiii
-'''
+```
 3. Try it works
-'''
+```
 heroku local web
-'''
+```
 4. Push it
-'''
+```
 git push heroku
-'''
+```
