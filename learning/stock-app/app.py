@@ -1,9 +1,9 @@
 from flask import Flask
-app = Flask(__name__)
-
+from stock import Stock, Helper
 import pandas as pd
 import numpy as np
-from stock import Stock, Helper
+
+app = Flask(__name__)
 
 @app.route("/")
 def hello():
@@ -15,7 +15,7 @@ def stock():
 
 
 '''
-Main program
+Main functions
 '''
 def predictStock(stock, helper):
 
@@ -51,8 +51,8 @@ def predictStock(stock, helper):
     print(result)
     return result
 
-# HTTP API
-app = Flask(__name__)
-
+'''
+Main program
+'''
 if __name__ == '__main__':
     app.run()
