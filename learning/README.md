@@ -10,9 +10,9 @@ Directory intended to store and test the different machine learning approaches. 
 - __neighbors.py__: NearestNeighbors
 - __sentiment-analysis-tflearn.py__: sentiment analysis from IMDB database and TFLearn
 
-_Note: not all files use the same python version. Take a look at the description._
+_Note: not all the files use the same python version. Take a look at the description._
 
-### Todo
+### To Do
 - Add AI in planes game (feedforward nn)
 - Chatbot in telegram bots (seq2seq?)
 - NLP NN
