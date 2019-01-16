@@ -1,5 +1,16 @@
 import gym
 import random
+import numpy as np
+from time import sleep
+
+def prepro(I):
+# prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector
+  I = I[35:195] # crop
+  I = I[::2,::2,0] # downsample by factor of 2
+  I[I == 144] = 0 # erase background (background type 1)
+  I[I == 109] = 0 # erase background (background type 2)
+  I[I != 0] = 1 # everything else (paddles, ball) just set to 1
+  return I.astype(np.float).ravel()
 
 # code for the two only actions in Pong
 UP_ACTION = 2
@@ -13,15 +24,13 @@ observation = env.reset()
 
 # main loop
 for i in range(300):
-    # render a frame
     env.render()
-
-    # choose random action
     action = random.randint(UP_ACTION, DOWN_ACTION)
-
-    # run one step
     observation, reward, done, info = env.step(action)
 
-    # if the episode is over, reset the environment
     if done:
         env.reset()
+
+    ##
+    sleep(0.03)
+    print(sum(prepro(observation)))
