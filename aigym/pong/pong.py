@@ -1,3 +1,4 @@
+import os
 import gym
 import random
 import numpy as np
@@ -23,16 +24,26 @@ env = gym.make("Pong-v0")
 # beginning of an episode
 observation = env.reset()
 
+# model weights
+h5file = "weights.h5"
+
 # get model
 model = get_nn()
+if os.path.exists(h5file):
+    model.load_weights(h5file)
 
 
+# training conf
+train = True
 x_train, y_train = [], []
+
 # main loop
 for i in range(10000):
     action = random.randint(UP_ACTION, DOWN_ACTION)
 
-    env.render()
+    if not train:
+        env.render()
+
     observation, reward, done, info = env.step(action)
 
     x = prepro(observation)
@@ -42,14 +53,17 @@ for i in range(10000):
     y = 1 if action == 2 else 0  # 0 and 1 are our labels
 
     # log the input and label to train later
-    x_train.append(x)
-    y_train.append(y)
+    if train:
+        x_train.append(x)
+        y_train.append(y)
 
     if done:
-        model.fit(x=np.vstack(x_train), y=np.vstack(y_train))
-        x_train, y_train = [], []
+        if train:
+            model.fit(x=np.vstack(x_train), y=np.vstack(y_train))
+            model.save_weights("weights.h5")
+            x_train, y_train = [], []
         env.reset()
 
     ##
-    sleep(0.03)
-    print(sum(prepro(observation)))
+    if not train:
+        sleep(0.03)
