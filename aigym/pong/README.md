@@ -5,7 +5,7 @@ References:
 
 To-do:
 [x] Run pong environment
-[ ] Gather knowledge about RL
+[x] Gather knowledge about RL
 [ ] Neural network + policy gradient
 [ ] Train (colab?)
 [ ] Check
