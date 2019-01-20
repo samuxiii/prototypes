@@ -27,36 +27,34 @@ if os.path.exists(h5file):
 
 
 # training conf
-train = True
+training = True
 x_train, y_train = [], []
 
 # main loop
 for i in range(10000):
-    action = random.randint(UP_ACTION, DOWN_ACTION)
 
-    if not train:
-        env.render()
-
-    observation, reward, done, info = env.step(action)
-
+    # predict action
     x = prepro(observation)
     proba = model.predict(np.expand_dims(x, axis=1).T)
 
     action = UP_ACTION if np.random.uniform() < proba else DOWN_ACTION
     y = 1 if action == 2 else 0  # 0 and 1 are our labels
 
+    # do one step
+    observation, reward, done, info = env.step(action)
+
     # log the input and label to train later
-    if train:
+    if training:
         x_train.append(x)
         y_train.append(y)
+    else:
+        env.render()
+        sleep(0.03)
 
     if done:
-        if train:
+        if training:
             model.fit(x=np.vstack(x_train), y=np.vstack(y_train))
-            model.save_weights("weights.h5")
+            model.save_weights(h5file)
             x_train, y_train = [], []
-        env.reset()
 
-    ##
-    if not train:
-        sleep(0.03)
+        observation = env.reset()
