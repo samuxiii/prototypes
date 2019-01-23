@@ -1,5 +1,7 @@
 import numpy as np
 
+'''Karpathy (ref: https://gist.github.com/karpathy/a4166c7fe253700972fcbc77e4ea32c5)'''
+
 def prepro(I):
 # prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector
   I = I[35:195] # crop
