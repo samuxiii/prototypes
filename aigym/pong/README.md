@@ -8,5 +8,5 @@ To-do:
 - [x] Run pong environment
 - [x] Gather knowledge about RL
 - [ ] Neural network + policy gradient
-- [ ] Train (colab?)
+- [ ] Training (colab?)
 - [ ] Check
