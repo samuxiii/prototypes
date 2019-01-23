@@ -4,7 +4,7 @@ import random
 import numpy as np
 from time import sleep
 from nn import get_nn
-from kaparthy import prepro, discount_rewards
+from karpathy import prepro, discount_rewards
 
 
 # code for the two only actions in Pong
