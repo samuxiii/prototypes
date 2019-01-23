@@ -4,7 +4,7 @@ import random
 import numpy as np
 from time import sleep
 from nn import get_nn
-from kaparthy import prepro
+from kaparthy import prepro, discount_rewards
 
 
 # code for the two only actions in Pong
@@ -28,10 +28,11 @@ if os.path.exists(h5file):
 
 # training conf
 training = True
-x_train, y_train = [], []
+x_train, y_train, rewards = [], [], []
+reward_sum = 0
 
 # main loop
-for i in range(10000):
+for i in range(100000):
 
     # predict action
     x = prepro(observation)
@@ -42,6 +43,8 @@ for i in range(10000):
 
     # do one step
     observation, reward, done, info = env.step(action)
+    rewards.append(reward)
+    reward_sum += reward
 
     # log the input and label to train later
     if training:
@@ -53,8 +56,9 @@ for i in range(10000):
 
     if done:
         if training:
-            model.fit(x=np.vstack(x_train), y=np.vstack(y_train))
+            model.fit(x=np.vstack(x_train), y=np.vstack(y_train), epochs=1, sample_weight=discount_rewards(rewards, 0.99))
             model.save_weights(h5file)
-            x_train, y_train = [], []
+            x_train, y_train, rewards = [], [], []
+            reward_sum = 0
 
         observation = env.reset()
