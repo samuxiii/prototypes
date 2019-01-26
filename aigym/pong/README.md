@@ -7,6 +7,6 @@ References:
 To-do:
 - [x] Run pong environment
 - [x] Gather knowledge about RL
-- [ ] Neural network + policy gradient
+- [ ] Neural network + policy gradient or Deep Q-Network (DQN)
 - [ ] Training (colab?)
 - [ ] Check
