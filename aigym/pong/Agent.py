@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from keras import backend as K
-from keras.layers import Dense
+from keras.layers import Dense, Conv2D, Flatten
 from keras.models import Sequential
 from keras.optimizers import Adam
 
@@ -14,13 +14,16 @@ class Agent:
 
     def __model(self):
         model = Sequential()
-        model.add(Dense(units=200,input_dim=40*40, activation='relu'))
-        model.add(Dense(units=2, activation='sigmoid'))
-        # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-        model.compile(loss='mse', optimizer=Adam(lr=0.01, decay=0.01))
+        model.add(Conv2D(16, kernel_size=4, activation='relu', input_shape=(80, 80, 3)))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
+        #model.add(MaxPooling2D(pool_size=(2, 2)))
+        #model.add(Dropout(0.25))
+        model.add(Flatten())
+        model.add(Dense(128, activation='relu'))
+        #model.add(Dropout(0.5))
+        model.add(Dense(2, activation='softmax'))
 
-        #model.add(Conv2D(3, kernel_size=4, activation='relu', input_shape=(40, 40, 3)))
-        #model.compile(loss='mse', optimizer=Adam(lr=0.01, decay=0.01))
+        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         return model
 
@@ -85,6 +88,8 @@ class Agent:
             return random.randint(0, 1)
 
         # predict the action to do
-        action_values = self.model.predict(state)[0]
+        state = np.expand_dims(state, axis=0)
+        action_values = self.model.predict(state)
+        print("Predictions:{}".format(action_values))
 
         return np.argmax(action_values)
