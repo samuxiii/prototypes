@@ -32,8 +32,11 @@ class Agent:
         return I  # shape:(80, 80, 3)
 
     def remember(self, state, action, reward, next_state, done):
-        # next_state must be preprocessed
-        next_state = self.preprocess(next_state)
+        # states must be preprocessed
+        if (state.shape[0] != 80 and state.shape[1] != 80):
+            state = self.preprocess(state)
+        if (next_state.shape[0] != 80 and next_state.shape[1] != 80):
+            next_state = self.preprocess(next_state)
 
         # store in memory the different states, actions, rewards...
         self.memory.append((state, action, reward, next_state, done))
@@ -53,11 +56,6 @@ class Agent:
         print("steps:{}".format(num_steps))
         for state, action, reward, next_state, done in minibatch:
 
-            #'''re-check dimesions of array to avoid this evaluation'''
-            #if state.ndim != 2:
-            #    continue
-
-            print("Remembering:{} r:{}".format(state.shape, reward))
             state = np.expand_dims(state, axis=0)
             target = self.model.predict(state)[0]
 
@@ -103,6 +101,5 @@ class Agent:
         # predict the action to do
         state = np.expand_dims(state, axis=0)
         action_values = self.model.predict(state)
-        print("Predictions:{}".format(action_values))
 
         return np.argmax(action_values)
