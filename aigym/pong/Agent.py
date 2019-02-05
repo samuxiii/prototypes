@@ -19,33 +19,46 @@ class Agent:
         model.add(Flatten())
         model.add(Dense(256, activation='relu'))
         model.add(Dense(2, activation='softmax'))
-
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
         return model
 
+    def preprocess(self, I):
+        # prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector
+        I = I[35:195]  # crop
+        I = I[::2, ::2, :]  # downsample by factor of 2
+        I[I == 144] = 0  # erase background (background type 1)
+        I[I == 109] = 0  # erase background (background type 2)
+        I[I != 0] = 1  # everything else (paddles, ball) just set to 1
+        return I  # shape:(80, 80, 3)
+
     def remember(self, state, action, reward, next_state, done):
+        # next_state must be preprocessed
+        next_state = self.preprocess(next_state)
+
         # store in memory the different states, actions, rewards...
         self.memory.append((state, action, reward, next_state, done))
 
     def replay(self, win):
         # fit model from memory
         gamma = 0.5  # importance of the next reward
-        max_batch_size = 32768
+        max_batch_size = 512
 
         # take care the memory could be big, so using minibatch
         # minibatch = random.sample(self.memory, min(max_batch_size, len(self.memory)))
         minibatch = self.memory
-        list_x_batch, list_y_batch = [], []
         num_steps = len(minibatch)
+
+        list_x_batch, list_y_batch = [], []
         step = 0
         print("steps:{}".format(num_steps))
         for state, action, reward, next_state, done in minibatch:
 
-            '''re-check dimesions of array to avoid this evaluation'''
-            if state.ndim != 2:
-                continue
+            #'''re-check dimesions of array to avoid this evaluation'''
+            #if state.ndim != 2:
+            #    continue
 
+            print("Remembering:{} r:{}".format(state.shape, reward))
+            state = np.expand_dims(state, axis=0)
             target = self.model.predict(state)[0]
 
             # if not done: #calculate discounted reward
@@ -80,6 +93,9 @@ class Agent:
             self.epsilon *= 0.9997
 
     def act(self, state):
+        # preprocess the sample
+        state = self.preprocess(state)
+
         # if self.epsilon > np.random.rand():
         if 0.4 > np.random.rand():
             return random.randint(0, 1)

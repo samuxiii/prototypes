@@ -6,16 +6,6 @@ from Agent import Agent
 from time import sleep
 
 
-def prepro(I):
-    # prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector
-    I = I[35:195]  # crop
-    I = I[::2, ::2, :]  # downsample by factor of 2
-    I[I == 144] = 0  # erase background (background type 1)
-    I[I == 109] = 0  # erase background (background type 2)
-    I[I != 0] = 1  # everything else (paddles, ball) just set to 1
-    return I  #shape:(80, 80, 3)
-
-
 # code for the two only actions in Pong
 UP_ACTION = 2
 DOWN_ACTION = 3
@@ -24,7 +14,7 @@ DOWN_ACTION = 3
 env = gym.make("Pong-v0")
 
 # beginning of an episode
-observation = prepro(env.reset())
+observation = env.reset()
 
 # model weights
 h5file = "weights.h5"
@@ -44,16 +34,11 @@ training = True
 # main loop
 for i in range(10000000):
     # predict action
-    print("observation shape:{}".format(observation.shape))
     action = agent.act(observation)
     movement = UP_ACTION if action == 0 else DOWN_ACTION
 
     # do one step
     next_observation, reward, done, info = env.step(movement)
-
-    # row vector
-    ##print("reward:{} done:{} info:{}".format(reward, done, info))
-    next_observation = prepro(next_observation)
 
     # save the current observation
     agent.remember(observation, action, reward, next_observation, done)
