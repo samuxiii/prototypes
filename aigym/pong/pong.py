@@ -2,9 +2,18 @@ import os
 import gym
 import random
 import numpy as np
+from Agent import Agent
 from time import sleep
-from nn import get_nn
-from karpathy import prepro, discount_rewards
+
+
+def prepro(I):
+    # prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector
+    I = I[35:195]  # crop
+    I = I[::4, ::4, 0]  # downsample by factor of 4
+    I[I == 144] = 0  # erase background (background type 1)
+    I[I == 109] = 0  # erase background (background type 2)
+    I[I != 0] = 1  # everything else (paddles, ball) just set to 1
+    return I.astype(np.float).ravel()
 
 
 # code for the two only actions in Pong
@@ -16,49 +25,59 @@ env = gym.make("Pong-v0")
 
 # beginning of an episode
 observation = env.reset()
+observation = prepro(observation).reshape(1, -1)
 
 # model weights
 h5file = "weights.h5"
 
-# get model
-model = get_nn()
-if os.path.exists(h5file):
-    model.load_weights(h5file)
+# agent
+agent = Agent()
 
+# get model
+if os.path.exists(h5file):
+    agent.model.load_weights(h5file)
 
 # training conf
 training = True
-x_train, y_train, rewards = [], [], []
-reward_sum = 0
+# x_train, y_train, rewards = [], [], []
+# reward_sum = 0
 
 # main loop
-for i in range(100000):
-
+for i in range(10000000):
     # predict action
-    x = prepro(observation)
-    proba = model.predict(np.expand_dims(x, axis=1).T)
-
-    action = UP_ACTION if np.random.uniform() < proba else DOWN_ACTION
-    y = 1 if action == 2 else 0  # 0 and 1 are our labels
+    '''re-check dimesions of array to avoid this evaluation'''
+    if observation.ndim != 2:
+        movement = UP_ACTION
+    else:
+        action = agent.act(observation)
+        movement = UP_ACTION if action == 0 else DOWN_ACTION
 
     # do one step
-    observation, reward, done, info = env.step(action)
-    rewards.append(reward)
-    reward_sum += reward
+    next_observation, reward, done, info = env.step(movement)
 
-    # log the input and label to train later
-    if training:
-        x_train.append(x)
-        y_train.append(y)
-    else:
-        env.render()
-        sleep(0.03)
+    # row vector
+    ##print("reward:{} done:{} info:{}".format(reward, done, info))
+    next_observation = prepro(next_observation).reshape(1, -1)
+    # next_observation = next_observation.reshape(1, -1)
+
+    # save the current observation
+    agent.remember(observation, action, reward, next_observation, done)
+
+    # update state
+    observation = next_observation
+
+    if reward != 0:
+        if reward == 1:
+            print("Win!!")
+        else:
+            print("Lose..")
+
+        if training:
+            win = True if reward == 1 else False
+            agent.replay(win)
+            agent.model.save_weights(h5file)
 
     if done:
-        if training:
-            model.fit(x=np.vstack(x_train), y=np.vstack(y_train), epochs=1, sample_weight=discount_rewards(rewards, 0.99))
-            model.save_weights(h5file)
-            x_train, y_train, rewards = [], [], []
-            reward_sum = 0
-
+        print("epsilon:{}".format(agent.epsilon))
         observation = env.reset()
+
