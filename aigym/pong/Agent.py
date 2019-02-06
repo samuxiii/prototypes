@@ -70,7 +70,7 @@ class Agent:
             #
             step += 1
             reg_win = (step / num_steps)
-            reg_loose = -(step / num_steps)
+            reg_loose = 0 #-(step / num_steps)
 
             target[action] = reg_win if win else reg_loose
 
@@ -94,8 +94,7 @@ class Agent:
         # preprocess the sample
         state = self.preprocess(state)
 
-        # if self.epsilon > np.random.rand():
-        if 0.4 > np.random.rand():
+        if self.epsilon > np.random.rand():
             return random.randint(0, 1)
 
         # predict the action to do
