@@ -5,10 +5,10 @@ import numpy as np
 from Agent import Agent
 from time import sleep
 
-
 # code for the two only actions in Pong
 UP_ACTION = 2
 DOWN_ACTION = 3
+NO_ACTION = 0
 
 # initializing our environment
 env = gym.make("Pong-v0")
@@ -28,36 +28,51 @@ if os.path.exists(h5file):
 
 # training conf
 training = True
-# x_train, y_train, rewards = [], [], []
-# reward_sum = 0
 
+episode = 0
+previousObs = np.zeros_like(observation)
+wins = 0
 # main loop
-for i in range(10000000):
+while episode < 10000:
     # predict action
-    action = agent.act(observation)
-    movement = UP_ACTION if action == 0 else DOWN_ACTION
+    diffObs = observation - previousObs
+    action = agent.act(diffObs)
 
-    # do one step
+    # movement = UP_ACTION if action == 1 else DOWN_ACTION
+    movement = NO_ACTION
+    if action == 1:
+        movement = UP_ACTION
+    elif action == 2:
+        movement = DOWN_ACTION
+
+        # do one step
     next_observation, reward, done, info = env.step(movement)
 
     # save the current observation
-    agent.remember(observation, action, reward, next_observation, done)
+    agent.remember(diffObs, action, reward, next_observation, done)
 
     # update state
+    previousObs = observation
     observation = next_observation
 
     if reward != 0:
         if reward == 1:
-            print("Win!!")
-        else:
-            print("Lose..")
+            wins += 1
 
         if training:
-            win = True if reward == 1 else False
-            agent.replay(win)
+            agent.replay()
             agent.model.save_weights(h5file)
 
     if done:
-        print("epsilon:{}".format(agent.epsilon))
-        observation = env.reset()
+        print("******* episode:{} wins:{} (epsilon:{}) ********".format(episode, wins, agent.epsilon))
 
+        if wins >= 20:
+            break
+
+        # decrease exploration rate
+        if agent.epsilon > 0.01:
+            agent.epsilon *= 0.997
+
+        observation = env.reset()
+        episode += 1
+        wins = 0
