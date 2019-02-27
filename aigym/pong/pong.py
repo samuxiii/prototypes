@@ -1,10 +1,13 @@
 import os
 import gym
+import pickle
 import random
 import numpy as np
 from Agent import Agent
 from time import sleep
 
+#!rm weights.h5
+#!rm data.pkl
 
 # code for the two only actions in Pong
 UP_ACTION = 2
@@ -32,12 +35,13 @@ if os.path.exists(h5file):
     agent.model.load_weights(h5file)
 
 # training conf
-training = True
+training = False
 
 # main loop
 episode = 0
 wins = 0
-win_performance = 0
+win_running_mean = 0
+wins_list = []
 
 while episode < 10000: 
     # predict action
@@ -60,21 +64,23 @@ while episode < 10000:
     if reward != 0:
         if reward == 1:
             wins += 1
-
-        if training:
+            
+        if training and (episode % 10 == 0):
             agent.replay()
-            agent.model.save_weights(h5file)
-    
+            
     if done:
-        print("******* episode:{} wins:{} perf:{:.3f} (epsilon:{:.3f}) ********".format(episode, wins, win_performance/(episode+1), agent.epsilon))
-
-        # decrease exploration rate
-        if agent.epsilon > 0.01:
-            agent.epsilon *= 0.97
         
-        observation = env.reset()
         episode += 1
-        win_performance += wins
+        win_running_mean += (wins - win_running_mean)/(len(wins_list)+1)
+        wins_list.append(win_running_mean)
+        print("******* episode:{} wins:{} perf:{:.3f} ********".format(episode, wins, win_running_mean))
+        
+        if episode % 50 == 0:
+          agent.model.save_weights(h5file)
+          with open('data.pkl', 'wb') as f:
+            pickle.dump(wins_list, f)
+          
+        observation = env.reset()
         wins = 0
 
 

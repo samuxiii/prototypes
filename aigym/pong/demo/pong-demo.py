@@ -36,7 +36,8 @@ else:
 previousObs = np.zeros_like(observation)
 episode = 0
 wins = 0
-win_performance = 0
+wins_list = []
+win_running_mean = 0
 
 # main loop
 for i in range(100000):
@@ -61,9 +62,11 @@ for i in range(100000):
             wins += 1
 
     if done:
-        print("******* episode:{} wins:{} mean_wins:{:.3f} ********".format(episode, wins, win_performance/(episode+1)))
-        observation = env.reset()
         episode += 1
-        win_performance += wins
+        win_running_mean += (wins - win_running_mean)/(len(wins_list)+1)
+        wins_list.append(win_running_mean)
+        print("******* episode:{} wins:{} perf:{:.3f} ********".format(episode, wins, win_running_mean))
+
+        observation = env.reset()
         wins = 0
 

@@ -9,23 +9,29 @@ class Agent:
 
     def __init__(self):
         self.memory = []
-        self.epsilon = 1.0  # exploration rate
         self.model = self.__model()
 
     def __model(self, lr=0.001):
         model = Sequential()
-        model.add(Conv2D(16, kernel_size=8, strides=4, input_shape=(80, 80, 1)))
+        model.add(Conv2D(32, kernel_size=3, strides=3, input_shape=(80, 80, 1)))
         #model.add(BatchNormalization())
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2,2)))
-        
-        model.add(Flatten())
-        model.add(Dense(128))
+
+        #model.add(Conv2D(8, kernel_size=4, strides=2))
         #model.add(BatchNormalization())
-        model.add(Activation('sigmoid'))
-        
+        #model.add(Activation('relu'))
+
+        model.add(Flatten())
+        model.add(Dense(256))
+        #model.add(BatchNormalization())
+        model.add(Activation('relu'))
+
         model.add(Dense(3, activation='softmax'))
-        model.compile(loss='mean_squared_error', optimizer=Adam(lr=lr), metrics=['accuracy'])
+        model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['accuracy'])
+
+        model.summary()
+
         return model
 
     def preprocess(self, I):
@@ -93,12 +99,6 @@ class Agent:
         self.model.fit(x_batch, y_batch, verbose=0)
 
     def act(self, state):
-        if self.epsilon > np.random.rand():
-            idx_a = random.randint(0, 2)
-            a = np.zeros([3])
-            a[idx_a] = 1
-            return idx_a, a
-
         # preprocess the sample
         state = self.preprocess(state)
         state = np.expand_dims(state, axis=0)
