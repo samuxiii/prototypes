@@ -19,6 +19,7 @@ env = gym.make("Pong-v0")
 
 # beginning of an episode
 observation = env.reset()
+previousObs = np.zeros([80,80,1])
 
 # model weights
 h5file = "weights.h5"
@@ -45,6 +46,7 @@ for i in range(100000):
     sleep(0.005)
 
     # predict action
+    observation = agent.preprocess(observation)
     diffObs = observation - previousObs
     
     action, actions = agent.act(diffObs)
@@ -68,5 +70,6 @@ for i in range(100000):
         print("******* episode:{} wins:{} perf:{:.3f} ********".format(episode, wins, win_running_mean))
 
         observation = env.reset()
+        previousObs = np.zeros([80,80,1])
         wins = 0
 
