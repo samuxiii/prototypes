@@ -13,22 +13,18 @@ class Agent:
 
     def __model(self, lr=0.001):
         model = Sequential()
-        model.add(Conv2D(32, kernel_size=3, strides=3, input_shape=(80, 80, 1)))
-        #model.add(BatchNormalization())
+        model.add(Conv2D(32, kernel_size=3, strides=3, input_shape=(80, 80, 1), use_bias=False))
+        model.add(BatchNormalization())
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2,2)))
 
-        #model.add(Conv2D(8, kernel_size=4, strides=2))
-        #model.add(BatchNormalization())
-        #model.add(Activation('relu'))
-
         model.add(Flatten())
-        model.add(Dense(256))
-        #model.add(BatchNormalization())
+        model.add(Dense(256, use_bias=False))
+        model.add(BatchNormalization())
         model.add(Activation('relu'))
 
         model.add(Dense(3, activation='softmax'))
-        model.compile(loss='mean_squared_error', optimizer=Adam(), metrics=['accuracy'])
+        model.compile(loss='mean_squared_error', optimizer=Adam(lr=lr), metrics=['accuracy'])
 
         model.summary()
 
