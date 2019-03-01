@@ -7,9 +7,10 @@ References:
 To-do:
 - [x] Run pong environment
 - [x] Gather knowledge about RL
-- [ ] :point_right: Neural network + policy gradient or Deep Q-Network (DQN)
-  - [x] Conv2d + Dense
-  - [ ] Relu + softmax -> action selection
-  - [ ] Tanh + mse -> reward prediction 
+- [ ] :point_right: Neural network policy gradient
+  - [x] Conv2d + Dense + softmax
+  - [-] Relu + softmax -> action selection
+  - [-] Tanh + mse -> reward prediction 
 - [x] Training (colab)
-- [ ] Check
+- [x] Check (some tests)
+- [ ] Update code from notebook
