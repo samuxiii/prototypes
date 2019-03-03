@@ -31,11 +31,11 @@ agent = Agent()
 if os.path.exists(h5file):
     agent.model.load_weights(h5file)
 else:
+    print("Not weights found. Exit.")
     exit(0)
 
 #
-previousObs = np.zeros_like(observation)
-episode = 0
+episode = 1
 wins = 0
 wins_list = []
 win_running_mean = 0
@@ -64,7 +64,6 @@ for i in range(100000):
             wins += 1
 
     if done:
-        episode += 1
         win_running_mean += (wins - win_running_mean)/(len(wins_list)+1)
         wins_list.append(win_running_mean)
         print("******* episode:{} wins:{} perf:{:.3f} ********".format(episode, wins, win_running_mean))
@@ -72,4 +71,5 @@ for i in range(100000):
         observation = env.reset()
         previousObs = np.zeros([80,80,1])
         wins = 0
+        episode += 1
 

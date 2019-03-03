@@ -56,7 +56,8 @@ class Agent:
     def remember(self, state, action, actions, reward):
         # assure states are preprocessed before keep in memory
         if (state.shape[0] != 80 and state.shape[1] != 80):
-            state = self.preprocess(state)
+            #state = self.preprocess(state)
+            return
 
         # store in memory the different states, actions, rewards...
         self.memory.append((state, action, actions, reward))
@@ -96,7 +97,6 @@ class Agent:
 
     def act(self, state):
         # preprocess the sample
-        state = self.preprocess(state)
         state = np.expand_dims(state, axis=0)
 
         # predict the action to do
