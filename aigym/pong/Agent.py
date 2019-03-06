@@ -24,7 +24,7 @@ class Agent:
         model.add(Activation('relu'))
 
         model.add(Dense(3, activation='softmax'))
-        model.compile(loss='mean_squared_error', optimizer=Adam(lr=lr), metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=lr), metrics=['accuracy'])
 
         model.summary()
 
