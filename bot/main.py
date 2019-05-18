@@ -1,14 +1,24 @@
+import os
 import dtree as dt
 import telebot
 from telebot import types
 import time
 from optparse import OptionParser
+import wikiquery as wq
 
 #get token from command line
 parser = OptionParser()
 parser.add_option("-t", "--token")
 (options, args) = parser.parse_args()
 TOKEN = options.token
+
+if not TOKEN:
+    #try from environment
+    TOKEN = os.environ.get('TOKEN')
+
+if not TOKEN:
+    print("Required TOKEN was not present")
+    exit(0)
 
 #init telebot
 bot = telebot.TeleBot(TOKEN)
@@ -19,7 +29,7 @@ def listener(messages):
     for m in messages:
         if m.content_type == 'text':
             cid = m.chat.id
-            print "[" + str(cid) + "]: " + m.text
+            print("[{}]:{}".format(str(cid), m.text))
 
 bot.set_update_listener(listener)
 
@@ -72,5 +82,19 @@ def command_smart(m):
     smart = 1;
     markup = types.ForceReply(selective=False)
     bot.send_message( cid, 'How tall are you?', reply_markup=markup)
+
+@bot.message_handler(commands=['x'])
+def command_x(m):
+    cid = m.chat.id
+    string = ' '.join(m.text.split()[1:])
+    words = string.split('?')
+    topic = words[0]
+    text = ' '.join(words[1:])
+    if not '?' in string:
+        text = topic
+        topic = ""
+    print("{}:{}".format(topic, text))
+    bot.send_message( cid, wq.query(topic, text))
+
 # end func #
 bot.polling(none_stop=True)
