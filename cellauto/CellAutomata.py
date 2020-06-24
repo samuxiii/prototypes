@@ -55,9 +55,9 @@ class CAModel(nn.Module):
   
     def forward(self, inputs):
         # inputs = torch.tensor(minibatch, CHANNELS, WIDTH, HEIGHT)
-        sx = F.conv2d(inputs, self.sobelX_kernel, padding=1, groups=16).clamp(0., 1.)
-        sy = F.conv2d(inputs, self.sobelY_kernel, padding=1, groups=16).clamp(0., 1.)
-        id = F.conv2d(inputs, self.identity_kernel, padding=1, groups=16).clamp(0., 1.)
+        sx = F.conv2d(inputs, self.sobelX_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
+        sy = F.conv2d(inputs, self.sobelY_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
+        id = F.conv2d(inputs, self.identity_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
 
         Grid().load((sx)[0]).show("Sobel X")
         Grid().load((sy)[0]).show("Sobel Y")
@@ -67,5 +67,5 @@ class CAModel(nn.Module):
 m = CAModel()
 img = Grid().loadIronman().image
 padding = torch.zeros((CHANNELS - 3, WIDTH, HEIGHT))
-img = torch.cat([img, padding], 0).unsqueeze(0)
+img = torch.cat([img, padding], 0).unsqueeze(0) # Initialize other channels to zero
 m.forward(img)
