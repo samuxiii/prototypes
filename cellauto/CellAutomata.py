@@ -82,6 +82,13 @@ class CAModel(nn.Module):
         diff = x.view(1, WIDTH, HEIGHT, CHANNELS).permute(0, 3, 1, 2)
         #print(diff.shape)
 
+        # stochastic update for differential image
+        stochastic = torch.rand((1, CHANNELS, WIDTH, HEIGHT)) < 0.5
+        stochastic = stochastic.type(torch.float)
+        #print(stochastic.shape)
+        #print(stochastic)
+        diff = diff * stochastic
+
         # alive masking
         alive = F.max_pool2d(input[:, 3, :, :], 3, stride=1, padding=1) > 0.1
         alive = alive.type(torch.float)
@@ -89,6 +96,7 @@ class CAModel(nn.Module):
 
         updated = ((diff + id) * alive).clamp(0., 1.)
         print(updated[0, :4, 32, 32])
+
 
         if showLayers:
             Grid().load((sx)[0]).show("Sobel X")
