@@ -15,11 +15,15 @@ class Grid:
     def __init__(self):
         super().__init__()
         # Initialization
-        self.image = torch.zeros((CHANNELS, WIDTH, HEIGHT))
+        self.image = None  # dim: (CHANNELS, WIDTH, HEIGHT)
 
     def loadIronman(self):
         im = Image.open("ironman.jpg")
-        self.image = transforms.ToTensor()(im)
+        im = im.convert('RGBA')
+        im = transforms.ToTensor()(im)
+        # Padding will be used to nitialize other channels to zero
+        padding = torch.zeros((CHANNELS - im.shape[0], WIDTH, HEIGHT))
+        self.image = torch.cat([im, padding], 0).unsqueeze(0)
         return self
 
     def load(self, img):
@@ -33,11 +37,8 @@ class Grid:
         plt.title(title)
         plt.show()
 
-
-# Grid().loadIronman().show()
-
 ###
-# Model obtrained from -> https://distill.pub/2020/growing-ca/
+# Model is explained here -> https://distill.pub/2020/growing-ca/
 
 class CAModel(nn.Module):
     def __init__(self):
@@ -54,11 +55,11 @@ class CAModel(nn.Module):
         self.fc1 = nn.Linear(CHANNELS * 3, 128)
         self.fc2 = nn.Linear(128, 16)
 
-    def forward(self, inputs, showLayers=False):
+    def forward(self, input, showLayers=False):
         # inputs = torch.tensor(minibatch, CHANNELS, WIDTH, HEIGHT)
-        sx = F.conv2d(inputs, self.sobelX_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
-        sy = F.conv2d(inputs, self.sobelY_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
-        id = F.conv2d(inputs, self.identity_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
+        sx = F.conv2d(input, self.sobelX_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
+        sy = F.conv2d(input, self.sobelY_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
+        id = F.conv2d(input, self.identity_kernel, padding=1, groups=CHANNELS).clamp(0., 1.)
 
         # every pixel will have 48 channels now in perception tensor
         # shape: [batch, 48, 64, 64]
@@ -81,19 +82,26 @@ class CAModel(nn.Module):
         diff = x.view(1, WIDTH, HEIGHT, CHANNELS).permute(0, 3, 1, 2)
         #print(diff.shape)
 
+        # alive masking
+        alive = F.max_pool2d(input[:, 3, :, :], 3, stride=1, padding=1) > 0.1
+        alive = alive.type(torch.float)
+        #print(alive.shape)
+
+        updated = ((diff + id) * alive).clamp(0., 1.)
+        print(updated[0, :4, 32, 32])
+
         if showLayers:
             Grid().load((sx)[0]).show("Sobel X")
             Grid().load((sy)[0]).show("Sobel Y")
             Grid().load((id)[0]).show("Identity")
             Grid().load((diff)[0]).show("Differential Image")
+            Grid().load(updated[0]).show("Updated Image")
 
-        return diff
+        return updated
 
 ###
 m = CAModel()
 img = Grid().loadIronman().image
-padding = torch.zeros((CHANNELS - 3, WIDTH, HEIGHT))
-img = torch.cat([img, padding], 0).unsqueeze(0)  # Initialize other channels to zero
 x = m.forward(img, True)
 
 #for _ in range(5):
