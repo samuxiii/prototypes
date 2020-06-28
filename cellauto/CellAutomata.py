@@ -18,8 +18,8 @@ class Grid:
         self.image = None  # dim: (CHANNELS, WIDTH, HEIGHT)
 
     def loadIronman(self):
-        im = Image.open("ironman.jpg")
-        im = im.convert('RGBA')
+        im = Image.open("owl.png") # it should be RGBA
+        #im = im.convert('RGBA')
         im = transforms.ToTensor()(im)
         # Padding will be used to nitialize other channels to zero
         padding = torch.zeros((CHANNELS - im.shape[0], WIDTH, HEIGHT))
@@ -32,7 +32,7 @@ class Grid:
 
     def show(self, title=""):
         # img = self.image.permute(1, 2, 0)
-        img = transforms.ToPILImage()(self.image[:3, :, :])
+        img = transforms.ToPILImage()(self.image[:4, :, :])
         plt.imshow(img)
         plt.title(title)
         plt.show()
@@ -83,11 +83,10 @@ class CAModel(nn.Module):
         #print(diff.shape)
 
         # stochastic update for differential image
-        stochastic = torch.rand((1, CHANNELS, WIDTH, HEIGHT)) < 0.5
+        stochastic = torch.rand((1, 1, WIDTH, HEIGHT)) < 0.5
         stochastic = stochastic.type(torch.float)
         #print(stochastic.shape)
-        #print(stochastic)
-        diff = diff * stochastic
+        diff = diff * stochastic  # same tensor will be applied over all the channels
 
         # alive masking
         alive = F.max_pool2d(input[:, 3, :, :], 3, stride=1, padding=1) > 0.1
@@ -95,8 +94,6 @@ class CAModel(nn.Module):
         #print(alive.shape)
 
         updated = ((diff + id) * alive).clamp(0., 1.)
-        print(updated[0, :4, 32, 32])
-
 
         if showLayers:
             Grid().load((sx)[0]).show("Sobel X")
@@ -105,6 +102,7 @@ class CAModel(nn.Module):
             Grid().load((diff)[0]).show("Differential Image")
             Grid().load(updated[0]).show("Updated Image")
 
+        Grid().load(updated[0]).show("Updated Image")
         return updated
 
 ###
@@ -112,5 +110,5 @@ m = CAModel()
 img = Grid().loadIronman().image
 x = m.forward(img, True)
 
-#for _ in range(5):
-#    x = m.forward(x, True)
+for _ in range(5):
+    x = m.forward(x, False)
