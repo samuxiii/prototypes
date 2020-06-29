@@ -3,14 +3,19 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
+#%matplotlib notebook
 
 from torchvision import transforms
 from PIL import Image
+
+# torch config
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Configurations
 CHANNELS = 16
 WIDTH = HEIGHT = 64
 plt.rcParams['toolbar'] = 'None'
+#plt.ion()
 
 ###
 class Grid:
@@ -25,11 +30,11 @@ class Grid:
         im = transforms.ToTensor()(im)
         # Padding will be used to nitialize other channels to zero
         padding = torch.zeros((CHANNELS - im.shape[0], WIDTH, HEIGHT))
-        self.image = torch.cat([im, padding], 0)
+        self.load(torch.cat([im, padding], 0))
         return self
 
     def load(self, img):
-        self.image = img
+        self.image = img.cpu()
         return self
 
     def show(self, title=""):
@@ -38,6 +43,7 @@ class Grid:
         plt.imshow(img)
         plt.title(title)
         plt.show()
+        #plt.draw()
 
 ###
 # Model is explained here -> https://distill.pub/2020/growing-ca/
@@ -46,9 +52,9 @@ class CAModel(nn.Module):
     def __init__(self):
         super().__init__()
 
-        filterY = torch.tensor([[1., 2., 1.], [0., 0., 0.], [-1., -2., -1.]])
+        filterY = torch.tensor([[1., 2., 1.], [0., 0., 0.], [-1., -2., -1.]]).to(device)
         filterX = filterY.t()
-        filterId = torch.tensor([[0., 0., 0.], [0., 1., 0.], [0., 0., 0.]])
+        filterId = torch.tensor([[0., 0., 0.], [0., 1., 0.], [0., 0., 0.]]).to(device)
 
         self.sobelX_kernel = filterX.expand(CHANNELS, 1, 3, 3)
         self.sobelY_kernel = filterY.expand(CHANNELS, 1, 3, 3)
@@ -87,7 +93,7 @@ class CAModel(nn.Module):
 
         # stochastic update for differential image
         stochastic = torch.rand((1, 1, WIDTH, HEIGHT)) < 0.5
-        stochastic = stochastic.type(torch.float)
+        stochastic = stochastic.type(torch.float).to(device)
         #print(stochastic.shape)
         diff = diff * stochastic  # same tensor will be applied over all the channels
 
@@ -110,27 +116,31 @@ class CAModel(nn.Module):
 
 
 def train(m, origin, target, debug=False):
-    loss_f = nn.MSELoss()
-    optimizer = optim.Adam(m.parameters(), lr=0.01)
-    target.unsqueeze_(0)
+    target = target.unsqueeze_(0).to(device)
+    lossT = 0
+    for epoch in range(1000):
+        loss_f = nn.MSELoss()
+        optimizer = optim.Adam(m.parameters(), lr=0.0001)
 
-    # Chose random steps in between range
-    n_steps = torch.randint(64, 96, (1,))
+        # Chose random steps in between range
+        n_steps = torch.randint(64, 96, (1,))
+        img = origin.clone().detach().to(device)
 
-    for i in range(n_steps):
-        optimizer.zero_grad()
-        origin = m.forward(origin, debug)
-        loss = loss_f(origin, target)
-        print("({}/{}) MSE Loss: {}".format(i+1, n_steps, loss))
-        loss.backward()
-        optimizer.step()
+        for step in range(n_steps):
+            optimizer.zero_grad()
+            img = m.forward(img, debug)
+            lossT = loss_f(img[:,:4,...], target[:,:4,...]) #loss is only calculated with RGBA
+            lossT.backward()
+            optimizer.step()
 
-        Grid().load(origin[0]).show()
+        if epoch % 100 == 0:
+            Grid().load(img[0]).show("Epoch {}".format(epoch))
+            print("Epoch:{} Step:{}/{}) MSE Loss: {}".format(epoch, step + 1, n_steps.data[0], lossT))
 
 
 ###
-model = CAModel()
-print("model: {}".format(model))
+model = CAModel().to(device)
+print("model: {} over device={}".format(model, device))
 img_target = Grid().loadIronman().image
 
 # Initialize origin image
@@ -140,4 +150,5 @@ img_orig[3:, WIDTH//2, HEIGHT//2] = 1.0
 
 # Adding batch dimension to img_orig
 img_orig.unsqueeze_(0)
+
 train(model, img_orig, img_target)
